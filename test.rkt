@@ -1,0 +1,23 @@
+#lang racket
+(require "AlgoritmoGoloso.rkt")
+
+(println "-----crear matriz-----")
+(define mat (buildMatrix 4 6))
+(printMat mat)
+(println "-----cambiar el valor de una matriz-----")
+(set! mat (setValToPos mat 0 2 1))
+(println "mat[0, 2] = 1")
+(printMat mat)
+(println "----- funcion de viabilidad-----")
+(define candidatos (viabilidad mat))
+(displayln candidatos)
+(println "----- funcion de objetivo-----")
+(define candidatosPuntuados (objetivo mat candidatos))
+(displayln candidatosPuntuados)
+; (println "----- funcion de seleccion-----")
+; (define candidatosPuntuados (list (list (list 1 2) 7) (list (list 0 0) 4) (list (list 2 2) -4)) )
+; (println "candidatos puntuados:")
+; (displayln candidatosPuntuados)
+; (define mejorCandidato (seleccionAux candidatosPuntuados '(0 0)) ) 
+; (displayln mejorCandidato)
+

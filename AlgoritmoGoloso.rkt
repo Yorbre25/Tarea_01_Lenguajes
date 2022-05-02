@@ -24,7 +24,7 @@
         m: numero de filas
         n: numero de columnas
 |#
-(define (buidMatrix m n)
+(define (buildMatrix m n)
     (cond
     [(and (and (>= m 3) (>= n 3)) (and (<= m 3) (<= n 3))) (buildMatrixAux '() '() m n 0 0)]
     [else printf("Error en las dimensiones de la matriz")]
@@ -85,7 +85,10 @@
     )
 )
 
-(define mat (buidMatrix 3 3))
+(define mat (buildMatrix 3 3))
 ; (printMat mat)
 ; (printMat (setPosTo mat 0 2 -1))
 (conjuntoCandidatos mat)
+
+
+(provide buildMatrix) ;;; Exporta la funcion para importarla desde otro archivo

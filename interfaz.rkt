@@ -12,6 +12,8 @@
     (floor (/ (get_dimensions dc) 5)))
 
 (define (draw_X dc)
+    (send dc set-pen (new pen% [color (make-object color% 250 112 112 1)] [width 4]))
+
     (send dc draw-line (calc_margin dc) (calc_margin dc)
                        (- (get_dimensions dc) (calc_margin dc)) (- (get_dimensions dc) (calc_margin dc)))
 
@@ -20,16 +22,35 @@
 )
 
 (define (draw_O dc)
+    (send dc set-pen (new pen% [color (make-object color% 94 247 125 1)] [width 4]))
+
     (send dc draw-ellipse (calc_margin dc) (calc_margin dc)
                           (- (get_dimensions dc) (* 2 (calc_margin dc))) (- (get_dimensions dc) (* 2 (calc_margin dc))))
+)
+
+(define (select_cell dc event)
+    (displayln dc)
+    (cond
+        [(not event)
+            (draw_O dc)
+            (draw_X dc)])
+)
+
+(define cell% 
+    (class canvas%
+        (define/override (on-event event)
+            (cond
+                [(equal? (send event get-event-type) 'left-up) 
+                    (lambda (cell dc) (select_cell dc #f))]))
+        (super-new)
+    )    
 )
 
 (define (generate_board grid rows cols)
     (for ([i (in-range rows)])
         (for ([j (in-range cols)])
-            (define cell 
-                (new canvas% [parent grid]
-                             [paint-callback (lambda (cell dc) (draw_O dc))]))
+            (define cell (new cell% [parent grid]
+                                    [paint-callback (lambda (cell dc) (select_cell dc #f))]))
 
             (send cell set-canvas-background (make-object color% 255 255 255 1))
             (send (send cell get-dc) set-text-foreground (make-object color% 0 0 0 1))

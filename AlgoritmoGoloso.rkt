@@ -145,7 +145,7 @@
     ; (displayln (list (car candidatos) '(0)))
     (cond
     [(null? candidatos) candidatosPuntuados]
-    [else (objetivoAux mat (cdr candidatos) (cons (puntuar mat (append (list (car candidatos)) '(0))) candidatosPuntuados))]
+    [else (objetivoAux mat (cdr candidatos) (cons (puntuar mat (cons (car candidatos) (list 0))) candidatosPuntuados))]
     )
 )
 
@@ -159,7 +159,6 @@
 |#
 (define (puntuar mat candSinPts)
     (horzPts mat candSinPts (caar candSinPts) (cadar candSinPts) (caar candSinPts) (- (cadar candSinPts) 1)  (length mat) (length (car mat)))
-    candSinPts    
 )
 
 #|
@@ -182,30 +181,32 @@
     ; (displayln (getValInPos mat i j))
     (cond
     [(or (< j 0) (= j cPos)) (horzPts mat cand rPos cPos i (+ j 1) m n)]
-    [(or (> j n) (= j (+ cPos 2))) cand] 
-    [(= (getValInPos mat i j) 0) (horzPts mat cand rPos cPos i (+ j 1) m n)]
+    [(or (>= j n) (= j (+ cPos 2))) cand] 
+    [(= (getValInPos mat i j) 0) (horzPts mat (cons (car cand) (list (+ (cadr cand) 1))) rPos cPos i (+ j 1) m n)]
     [else 
-        ; (displayln "yass")
-        (displayln (ptsForOtherO mat rPos cPos i (- j 1) n)) ;* Hay que restar o sumar 1 para revisar si hay otro 0
-        ; (displayln (cons (+ (cadr cand) (ptsForOtherO mat rPos cPos i j n)) (car cand)))
-        ; (cond
-            ; [(= (getValInPos mat i j) 1) (horzPts mat (cons (+ (cadr cand) (ptsForOtherO mat rPos cPos i j n)) (car cand)) rPos cPos i j m n)]
-            ; [(= (getValInPos mat i j) -1) (horzPts mat (cons (+ (cadr cand) (ptsForOtherX mat rPos cPos i j n )) (car cand)) rPos cPos i j m n)]
-        ; )
+        (cond
+        [(and (< j cPos) (= (getValInPos mat i j) 1)) (horzPts mat (cons (car cand) (list (+ (cadr cand) (ptsForOtherO mat rPos cPos i (- j 1) n)))) rPos cPos i (+ j 1) m n)]
+        [(and (> j cPos) (= (getValInPos mat i j) 1)) (horzPts mat (cons (car cand) (list (+ (cadr cand) (ptsForOtherO mat rPos cPos i (+ j 1) n)))) rPos cPos i (+ j 1) m n)]
+        [(and (< j cPos) (= (getValInPos mat i j) 2)) (horzPts mat (cons (car cand) (list (+ (cadr cand) (ptsForOtherX mat rPos cPos i (- j 1) n)))) rPos cPos i (+ j 1) m n)]
+        [(and (> j cPos) (= (getValInPos mat i j) 2)) (horzPts mat (cons (car cand) (list (+ (cadr cand) (ptsForOtherX mat rPos cPos i (+ j 1) n)))) rPos cPos i (+ j 1) m n)]
+        )
     ]    
     )
 )
-
+; (cons (car cand) (list (+ (cadr cand) (ptsForOtherO mat rPos cPos i j n))))
 
 #|
 
 |#
-(define (ptsForOtherO mat rPos cPos notEmpTileRPos notEmpTileCPos n)
+(define (ptsForOtherO mat rPos cPos notEmpTileRPos notEmpTileCPos n) ;* Los nombres de los parametros son mejorables
     ; (displayln "entró for")
-    (display notEmpTileRPos)
-    (displayln notEmpTileCPos)
+    ; (display notEmpTileRPos)
+    ; (displayln notEmpTileCPos)
+    ; (displayln (getValInPos mat notEmpTileRPos notEmpTileCPos))
     (cond
-    [(or (and (> notEmpTileCPos cPos) (< notEmpTileCPos n)) (and (< notEmpTileCPos cPos) (> notEmpTileCPos 0)))
+    [(or (and (> notEmpTileCPos cPos) (< notEmpTileCPos n)) (and (< notEmpTileCPos cPos) (>= notEmpTileCPos 0)))
+        ; (displayln "entró")
+        ; (displayln (if (= (getValInPos mat notEmpTileRPos notEmpTileCPos) 1) 25 3))
         (if (= (getValInPos mat notEmpTileRPos notEmpTileCPos) 1) 25 3)
     ]
     [else 3]
@@ -214,8 +215,8 @@
 
 (define (ptsForOtherX mat rPos cPos notEmpTileRPos notEmpTileCPos n)
     (cond
-    [(or (and (> notEmpTileCPos cPos) (< notEmpTileCPos n)) (and (< notEmpTileCPos cPos) (< notEmpTileCPos 0)))
-        (if (= (getValInPos mat notEmpTileRPos notEmpTileCPos) -1) 20 -3)
+    [(or (and (> notEmpTileCPos cPos) (< notEmpTileCPos n)) (and (< notEmpTileCPos cPos) (>= notEmpTileCPos 0)))
+        (if (= (getValInPos mat notEmpTileRPos notEmpTileCPos) 2) 20 -3)
     ]
     [else -3]
     )

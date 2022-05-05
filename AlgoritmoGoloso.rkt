@@ -40,6 +40,34 @@
 )
 
 #|
+    Devuelve el valor de la matriz que está en la posición
+    de entrada.
+    Entrada:
+        mat: matriz
+        i: posición en filas
+        j: posición en columnas
+|#
+(define (getValInPos mat i j)
+    (getValInPosAuxR mat i j 0 0)
+)
+
+(define (getValInPosAuxR mat rPos cPos i j)
+    (cond
+    [(null? mat) '()]
+    [(= rPos i) (getValInPosAuxC (car mat) cPos j)]
+    [else (getValInPosAuxR (cdr mat) rPos cPos (+ i 1) j)]
+    )
+)
+
+(define (getValInPosAuxC raw cPos j)
+    (cond
+    [(null? raw) '()]
+    [(= cPos j) (car raw)]
+    [else (getValInPosAuxC (cdr raw) cPos (+ j 1))]
+    )
+)
+
+#|
     Cambia el valor de la matriz. mat[i, j] = valor
     Entrada:
         mat: matriz
@@ -114,18 +142,23 @@
 )
 
 (define (objetivoAux mat candidatos candidatosPuntuados)
-    ; (displayln candidatos)
+    ; (displayln (list (car candidatos) '(0)))
     (cond
     [(null? candidatos) candidatosPuntuados]
-    [else (objetivoAux mat (cdr candidatos) (cons (puntuar mat (car candidatos)) candidatosPuntuados))]
+    [else (objetivoAux mat (cdr candidatos) (cons (puntuar mat (append (list (car candidatos)) '(0))) candidatosPuntuados))]
     )
 )
 
 #|
     Función puntuar: suma los puntos 
+    Por cada tile vacía que rodee la tile candidata +1pt (pts max posibles 8pts)
+    Por cada tile con un circulo +3pts (pts max posibles 18 pts)
+    Por cada oportunidad de victoria (2 circulos seguidos en vertical, horizontal o diagonal) +25ps (pts max posibles 150pts)
+    Por cada tile con una equis -3pts (pts minimos posibles -18 pts)
+    Por cada oportunidad de derrota (2 equis seguidas en vertical, horizontal o diagonal) +20ps (pts max posibles 120pts)
 |#
 (define (puntuar mat candSinPts)
-    (puntHoriz mat candSinPts (car candSinPts) (cadr candSinPts) (car candSinPts) (+ (car candSinPts) 2)  (length mat) (length (car mat)))
+    (horzPts mat candSinPts (caar candSinPts) (cadar candSinPts) (caar candSinPts) (- (cadar candSinPts) 1)  (length mat) (length (car mat)))
     candSinPts    
 )
 
@@ -143,14 +176,50 @@
         m: Número de filas de la matriz
         n: Número de columnas de la matriz
 |#
-(define (puntHoriz mat candSinPts rPos cPos i j m n)
-    (display rPos)
-    (displayln cPos)
-    (cond)
+(define (horzPts mat cand rPos cPos i j m n)
+    ; (display i)
+    ; (displayln j)
+    ; (displayln (getValInPos mat i j))
+    (cond
+    [(or (< j 0) (= j cPos)) (horzPts mat cand rPos cPos i (+ j 1) m n)]
+    [(or (> j n) (= j (+ cPos 2))) cand] 
+    [(= (getValInPos mat i j) 0) (horzPts mat cand rPos cPos i (+ j 1) m n)]
+    [else 
+        ; (displayln "yass")
+        (displayln (ptsForOtherO mat rPos cPos i (- j 1) n)) ;* Hay que restar o sumar 1 para revisar si hay otro 0
+        ; (displayln (cons (+ (cadr cand) (ptsForOtherO mat rPos cPos i j n)) (car cand)))
+        ; (cond
+            ; [(= (getValInPos mat i j) 1) (horzPts mat (cons (+ (cadr cand) (ptsForOtherO mat rPos cPos i j n)) (car cand)) rPos cPos i j m n)]
+            ; [(= (getValInPos mat i j) -1) (horzPts mat (cons (+ (cadr cand) (ptsForOtherX mat rPos cPos i j n )) (car cand)) rPos cPos i j m n)]
+        ; )
+    ]    
+    )
 )
 
-; (define (puntAux mat candSinPts rPos cPos i j))
 
+#|
+
+|#
+(define (ptsForOtherO mat rPos cPos notEmpTileRPos notEmpTileCPos n)
+    ; (displayln "entró for")
+    (display notEmpTileRPos)
+    (displayln notEmpTileCPos)
+    (cond
+    [(or (and (> notEmpTileCPos cPos) (< notEmpTileCPos n)) (and (< notEmpTileCPos cPos) (> notEmpTileCPos 0)))
+        (if (= (getValInPos mat notEmpTileRPos notEmpTileCPos) 1) 25 3)
+    ]
+    [else 3]
+    )
+)
+
+(define (ptsForOtherX mat rPos cPos notEmpTileRPos notEmpTileCPos n)
+    (cond
+    [(or (and (> notEmpTileCPos cPos) (< notEmpTileCPos n)) (and (< notEmpTileCPos cPos) (< notEmpTileCPos 0)))
+        (if (= (getValInPos mat notEmpTileRPos notEmpTileCPos) -1) 20 -3)
+    ]
+    [else -3]
+    )
+)
 
 ; (provide buildMatrix) ;;; Exporta la funcion para importarla desde otro archivo
 (provide (all-defined-out)) ;Exporta todo

@@ -162,7 +162,98 @@
 |#
 (define (puntuar mat candSinPts)
     (horzPts mat candSinPts (cadar candSinPts) (caar candSinPts) (- (cadar candSinPts) 1)  (length mat) (length (car mat)))
-    (vertPts mat candSinPts (caar candSinPts) (- (caar candSinPts) 1) (cadar candSinPts)  (length mat) (length (car mat)))
+    ; (vertPts mat candSinPts (caar candSinPts) (- (caar candSinPts) 1) (cadar candSinPts)  (length mat) (length (car mat)))
+    ; (diagPts mat candSinPts (caar candSinPts) (cadar candSinPts) (- (caar candSinPts) 1) (- (cadar candSinPts) 1) (length mat) (length (car mat)))
+    ; (inDiagPts mat candSinPts (caar candSinPts) (cadar candSinPts) (- (caar candSinPts) 1) (+ (cadar candSinPts) 1) (length mat) (length (car mat)))
+)
+
+(define (inDiagPts mat cand rPos cPos i j m n)
+    (display rPos)
+    (displayln cPos)
+    (display i)
+    (displayln j)
+    (cond
+    [(or (< i 0) (and (= j cPos) (= i rPos))) (inDiagPts mat cand rPos cPos (+ i 1) (- j 1) m n)]
+    [(or (>= i m) (>= j n) (and (= i (+ rPos 2)) (= j (- cPos 2)))) cand] 
+    [(null? (getValInPos mat i j)) cand]
+    [(= (getValInPos mat i j) 0) (inDiagPts mat (cons (car cand) (list (+ (cadr cand) 1))) rPos cPos (+ i 1) (- j 1) m n)]
+    [else 
+        (cond
+        [(and (> i rPos) (= (getValInPos mat i j) 1)) (inDiagPts mat (cons (car cand) (list (+ (cadr cand) (inDPtsForOtherO mat rPos cPos (+ i 1) (- j 1) m n)))) rPos cPos (+ i 1) (- j 1) m n)]
+        [(and (< i rPos) (= (getValInPos mat i j) 1)) (inDiagPts mat (cons (car cand) (list (+ (cadr cand) (inDPtsForOtherO mat rPos cPos (- i 1) (+ j 1) m n)))) rPos cPos (+ i 1) (- j 1) m n)]
+        [(and (< i rPos) (= (getValInPos mat i j) 2)) (inDiagPts mat (cons (car cand) (list (+ (cadr cand) (inDPtsForOtherX mat rPos cPos (- i 1) (+ j 1) m n)))) rPos cPos (+ i 1) (- j 1) m n)]
+        [(and (> i rPos) (= (getValInPos mat i j) 2)) (inDiagPts mat (cons (car cand) (list (+ (cadr cand) (inDPtsForOtherX mat rPos cPos (+ i 1) (- j 1) m n)))) rPos cPos (+ i 1) (- j 1) m n)]
+        )
+    ]    
+    )
+)
+
+
+(define (inDPtsForOtherO mat rPos cPos notEmpTileRPos notEmpTileCPos m n)
+    ; (displayln "entró for")
+    ; (display notEmpTileRPos)
+    ; (displayln notEmpTileCPos)
+    ; (displayln (getValInPos mat notEmpTileRPos notEmpTileCPos))
+    (cond
+    [(or (and (> notEmpTileRPos rPos) (< notEmpTileRPos m) (< notEmpTileCPos cPos) (>= notEmpTileCPos 0)) (and (< notEmpTileRPos rPos) (>= notEmpTileRPos 0) (> notEmpTileCPos cPos) (< notEmpTileCPos n)))
+        ; (displayln "entró")
+        ; (displayln (if (= (getValInPos mat notEmpTileRPos notEmpTileCPos) 1) 25 3))
+        (if (= (getValInPos mat notEmpTileRPos notEmpTileCPos) 1) 25 3)
+    ]
+    [else 3]
+    )
+)
+
+(define (inDPtsForOtherX mat rPos cPos notEmpTileRPos notEmpTileCPos m n)
+    (cond
+    [(or (and (> notEmpTileRPos rPos) (< notEmpTileRPos m) (< notEmpTileCPos cPos) (>= notEmpTileCPos 0)) (and (< notEmpTileRPos rPos) (>= notEmpTileRPos 0) (> notEmpTileCPos cPos) (< notEmpTileCPos n)))
+        (if (= (getValInPos mat notEmpTileRPos notEmpTileCPos) 2) 20 -3)
+    ]
+    [else -3]
+    )
+)
+
+#|
+    
+|#
+(define (diagPts mat cand rPos cPos i j m n)
+    (cond
+    [(or (< i 0) (< j 0) (= j cPos) (= i rPos)) (diagPts mat cand rPos cPos (+ i 1) (+ j 1) m n)]
+    [(or (>= i m) (>= j n) (= i (+ rPos 2)) (= j (+ cPos 2))) cand] 
+    [(= (getValInPos mat i j) 0) (diagPts mat (cons (car cand) (list (+ (cadr cand) 1))) rPos cPos (+ i 1) (+ j 1) m n)]
+    [else 
+        (cond
+        [(and (> i rPos) (= (getValInPos mat i j) 1)) (diagPts mat (cons (car cand) (list (+ (cadr cand) (dPtsForOtherO mat rPos cPos (+ i 1) (+ j 1) m n)))) rPos cPos (+ i 1) (+ j 1) m n)]
+        [(and (< i rPos) (= (getValInPos mat i j) 1)) (diagPts mat (cons (car cand) (list (+ (cadr cand) (dPtsForOtherO mat rPos cPos (- i 1) (- j 1) m n)))) rPos cPos (+ i 1) (+ j 1) m n)]
+        [(and (< i rPos) (= (getValInPos mat i j) 2)) (diagPts mat (cons (car cand) (list (+ (cadr cand) (dPtsForOtherX mat rPos cPos (- i 1) (- j 1) m n)))) rPos cPos (+ i 1) (+ j 1) m n)]
+        [(and (> i rPos) (= (getValInPos mat i j) 2)) (diagPts mat (cons (car cand) (list (+ (cadr cand) (dPtsForOtherX mat rPos cPos (+ i 1) (+ j 1) m n)))) rPos cPos (+ i 1) (+ j 1) m n)]
+        )
+    ]    
+    )
+)
+
+(define (dPtsForOtherO mat rPos cPos notEmpTileRPos notEmpTileCPos m n)
+    ; (displayln rPos)
+    ; (display notEmpTileRPos)
+    ; (displayln notEmpTileCPos)
+    ; (displayln (getValInPos mat notEmpTileRPos notEmpTileCPos))
+    (cond
+    [(or (and (> notEmpTileRPos rPos) (< notEmpTileRPos m) (> notEmpTileCPos cPos) (< notEmpTileCPos n)) (and (< notEmpTileRPos rPos) (>= notEmpTileRPos 0) (< notEmpTileCPos cPos) (>= notEmpTileCPos 0)))
+        ; (displayln "entró")
+        ; (displayln (if (= (getValInPos mat notEmpTileRPos notEmpTileCPos) 1) 25 3))
+        (if (= (getValInPos mat notEmpTileRPos notEmpTileCPos) 1) 25 3)
+    ]
+    [else 3]
+)
+)
+
+(define (dPtsForOtherX mat rPos cPos notEmpTileRPos notEmpTileCPos m n)
+    (cond
+    [(or (and (> notEmpTileRPos rPos) (< notEmpTileRPos m) (> notEmpTileCPos cPos) (< notEmpTileCPos n)) (and (< notEmpTileRPos rPos) (>= notEmpTileRPos 0) (< notEmpTileCPos cPos) (>= notEmpTileCPos 0) ))
+        (if (= (getValInPos mat notEmpTileRPos notEmpTileCPos) 2) 20 -3)
+    ]
+    [else -3]
+    )
 )
 
 #|
@@ -207,6 +298,7 @@
     [else -3]
     )
 )
+
 
 
 

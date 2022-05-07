@@ -117,16 +117,15 @@
     Función selección: Retorna el mejor candidato para marcar en el tablero
     Entrada:
         mat: Matriz
-        candidatos: Lista de pares candidatos
 |#
-(define (seleccion mat candidatos)
-    (seleccionAux (objetivo mat candidatos) '(0 0))
+(define (seleccion mat)
+    (seleccionAux (objetivo mat (viabilidad mat)) '(0 0))
 )
 
 (define (seleccionAux candidatosPuntuados mejor)
     (cond
     [(null? candidatosPuntuados) mejor]
-    [(< (cadr mejor) (cadar candidatosPuntuados)) (seleccionAux (cdr candidatosPuntuados) (car candidatosPuntuados))]
+    [(<= (cadr mejor) (cadar candidatosPuntuados)) (seleccionAux (cdr candidatosPuntuados) (car candidatosPuntuados))]
     [else (seleccionAux (cdr candidatosPuntuados) mejor)]
     )
 )
@@ -138,6 +137,7 @@
         candidatos: Lista de candidatos
 |#
 (define (objetivo mat candidatos)
+    (displayln (objetivoAux mat candidatos '()))
     (objetivoAux mat candidatos '())
 )
 
@@ -161,207 +161,335 @@
         candSinPts: Candidato junto con sus puntos. Ej: ((i j) 3pts)
 |#
 (define (puntuar mat candSinPts)
-    (horzPts mat candSinPts (cadar candSinPts) (caar candSinPts) (- (cadar candSinPts) 1)  (length mat) (length (car mat)))
+    ; (horzPts mat candSinPts (cadar candSinPts) (caar candSinPts) (- (cadar candSinPts) 1) (length (car mat)))
     ; (vertPts mat candSinPts (caar candSinPts) (- (caar candSinPts) 1) (cadar candSinPts)  (length mat) (length (car mat)))
     ; (diagPts mat candSinPts (caar candSinPts) (cadar candSinPts) (- (caar candSinPts) 1) (- (cadar candSinPts) 1) (length mat) (length (car mat)))
     ; (inDiagPts mat candSinPts (caar candSinPts) (cadar candSinPts) (- (caar candSinPts) 1) (+ (cadar candSinPts) 1) (length mat) (length (car mat)))
-)
-
-(define (inDiagPts mat cand rPos cPos i j m n)
-    (display rPos)
-    (displayln cPos)
-    (display i)
-    (displayln j)
-    (cond
-    [(or (< i 0) (and (= j cPos) (= i rPos))) (inDiagPts mat cand rPos cPos (+ i 1) (- j 1) m n)]
-    [(or (>= i m) (>= j n) (and (= i (+ rPos 2)) (= j (- cPos 2)))) cand] 
-    [(null? (getValInPos mat i j)) cand]
-    [(= (getValInPos mat i j) 0) (inDiagPts mat (cons (car cand) (list (+ (cadr cand) 1))) rPos cPos (+ i 1) (- j 1) m n)]
-    [else 
-        (cond
-        [(and (> i rPos) (= (getValInPos mat i j) 1)) (inDiagPts mat (cons (car cand) (list (+ (cadr cand) (inDPtsForOtherO mat rPos cPos (+ i 1) (- j 1) m n)))) rPos cPos (+ i 1) (- j 1) m n)]
-        [(and (< i rPos) (= (getValInPos mat i j) 1)) (inDiagPts mat (cons (car cand) (list (+ (cadr cand) (inDPtsForOtherO mat rPos cPos (- i 1) (+ j 1) m n)))) rPos cPos (+ i 1) (- j 1) m n)]
-        [(and (< i rPos) (= (getValInPos mat i j) 2)) (inDiagPts mat (cons (car cand) (list (+ (cadr cand) (inDPtsForOtherX mat rPos cPos (- i 1) (+ j 1) m n)))) rPos cPos (+ i 1) (- j 1) m n)]
-        [(and (> i rPos) (= (getValInPos mat i j) 2)) (inDiagPts mat (cons (car cand) (list (+ (cadr cand) (inDPtsForOtherX mat rPos cPos (+ i 1) (- j 1) m n)))) rPos cPos (+ i 1) (- j 1) m n)]
-        )
-    ]    
-    )
-)
-
-
-(define (inDPtsForOtherO mat rPos cPos notEmpTileRPos notEmpTileCPos m n)
-    ; (displayln "entró for")
-    ; (display notEmpTileRPos)
-    ; (displayln notEmpTileCPos)
-    ; (displayln (getValInPos mat notEmpTileRPos notEmpTileCPos))
-    (cond
-    [(or (and (> notEmpTileRPos rPos) (< notEmpTileRPos m) (< notEmpTileCPos cPos) (>= notEmpTileCPos 0)) (and (< notEmpTileRPos rPos) (>= notEmpTileRPos 0) (> notEmpTileCPos cPos) (< notEmpTileCPos n)))
-        ; (displayln "entró")
-        ; (displayln (if (= (getValInPos mat notEmpTileRPos notEmpTileCPos) 1) 25 3))
-        (if (= (getValInPos mat notEmpTileRPos notEmpTileCPos) 1) 25 3)
-    ]
-    [else 3]
-    )
-)
-
-(define (inDPtsForOtherX mat rPos cPos notEmpTileRPos notEmpTileCPos m n)
-    (cond
-    [(or (and (> notEmpTileRPos rPos) (< notEmpTileRPos m) (< notEmpTileCPos cPos) (>= notEmpTileCPos 0)) (and (< notEmpTileRPos rPos) (>= notEmpTileRPos 0) (> notEmpTileCPos cPos) (< notEmpTileCPos n)))
-        (if (= (getValInPos mat notEmpTileRPos notEmpTileCPos) 2) 20 -3)
-    ]
-    [else -3]
-    )
-)
-
-#|
     
-|#
-(define (diagPts mat cand rPos cPos i j m n)
-    (cond
-    [(or (< i 0) (< j 0) (= j cPos) (= i rPos)) (diagPts mat cand rPos cPos (+ i 1) (+ j 1) m n)]
-    [(or (>= i m) (>= j n) (= i (+ rPos 2)) (= j (+ cPos 2))) cand] 
-    [(= (getValInPos mat i j) 0) (diagPts mat (cons (car cand) (list (+ (cadr cand) 1))) rPos cPos (+ i 1) (+ j 1) m n)]
-    [else 
-        (cond
-        [(and (> i rPos) (= (getValInPos mat i j) 1)) (diagPts mat (cons (car cand) (list (+ (cadr cand) (dPtsForOtherO mat rPos cPos (+ i 1) (+ j 1) m n)))) rPos cPos (+ i 1) (+ j 1) m n)]
-        [(and (< i rPos) (= (getValInPos mat i j) 1)) (diagPts mat (cons (car cand) (list (+ (cadr cand) (dPtsForOtherO mat rPos cPos (- i 1) (- j 1) m n)))) rPos cPos (+ i 1) (+ j 1) m n)]
-        [(and (< i rPos) (= (getValInPos mat i j) 2)) (diagPts mat (cons (car cand) (list (+ (cadr cand) (dPtsForOtherX mat rPos cPos (- i 1) (- j 1) m n)))) rPos cPos (+ i 1) (+ j 1) m n)]
-        [(and (> i rPos) (= (getValInPos mat i j) 2)) (diagPts mat (cons (car cand) (list (+ (cadr cand) (dPtsForOtherX mat rPos cPos (+ i 1) (+ j 1) m n)))) rPos cPos (+ i 1) (+ j 1) m n)]
-        )
-    ]    
-    )
-)
-
-(define (dPtsForOtherO mat rPos cPos notEmpTileRPos notEmpTileCPos m n)
-    ; (displayln rPos)
-    ; (display notEmpTileRPos)
-    ; (displayln notEmpTileCPos)
-    ; (displayln (getValInPos mat notEmpTileRPos notEmpTileCPos))
-    (cond
-    [(or (and (> notEmpTileRPos rPos) (< notEmpTileRPos m) (> notEmpTileCPos cPos) (< notEmpTileCPos n)) (and (< notEmpTileRPos rPos) (>= notEmpTileRPos 0) (< notEmpTileCPos cPos) (>= notEmpTileCPos 0)))
-        ; (displayln "entró")
-        ; (displayln (if (= (getValInPos mat notEmpTileRPos notEmpTileCPos) 1) 25 3))
-        (if (= (getValInPos mat notEmpTileRPos notEmpTileCPos) 1) 25 3)
-    ]
-    [else 3]
-)
-)
-
-(define (dPtsForOtherX mat rPos cPos notEmpTileRPos notEmpTileCPos m n)
-    (cond
-    [(or (and (> notEmpTileRPos rPos) (< notEmpTileRPos m) (> notEmpTileCPos cPos) (< notEmpTileCPos n)) (and (< notEmpTileRPos rPos) (>= notEmpTileRPos 0) (< notEmpTileCPos cPos) (>= notEmpTileCPos 0) ))
-        (if (= (getValInPos mat notEmpTileRPos notEmpTileCPos) 2) 20 -3)
-    ]
-    [else -3]
-    )
+    (vertPts mat (horzPts mat (diagPts mat (inDiagPts mat candSinPts (caar candSinPts) (cadar candSinPts) (- (caar candSinPts) 1) (+ (cadar candSinPts) 1) (length mat) (length (car mat)) 0)
+    (caar candSinPts) (cadar candSinPts) (- (caar candSinPts) 1) (- (cadar candSinPts) 1) (length mat) (length (car mat)) 0)
+    (cadar candSinPts) (caar candSinPts) (- (cadar candSinPts) 1) (length (car mat)) 0)
+    (caar candSinPts) (- (caar candSinPts) 1) (cadar candSinPts)  (length mat) (length (car mat)) 0)
 )
 
 #|
-    
-|#
-(define (vertPts mat cand rPos i j m n)
-    (cond
-    [(or (< i 0) (= i rPos)) (vertPts mat cand rPos (+ i 1) j m n)]
-    [(or (>= i m) (= i (+ rPos 2))) cand] 
-    [(= (getValInPos mat i j) 0) (vertPts mat (cons (car cand) (list (+ (cadr cand) 1))) rPos (+ i 1) j m n)]
-    [else 
-        (cond
-        [(and (> i rPos) (= (getValInPos mat i j) 1)) (vertPts mat (cons (car cand) (list (+ (cadr cand) (vPtsForOtherO mat rPos (+ i 1) j m)))) rPos (+ i 1) j m n)]
-        [(and (< i rPos) (= (getValInPos mat i j) 1)) (vertPts mat (cons (car cand) (list (+ (cadr cand) (vPtsForOtherO mat rPos (- i 1) j m)))) rPos (+ i 1) j m n)]
-        [(and (< i rPos) (= (getValInPos mat i j) 2)) (vertPts mat (cons (car cand) (list (+ (cadr cand) (vPtsForOtherX mat rPos (- i 1) j m)))) rPos (+ i 1) j m n)]
-        [(and (> i rPos) (= (getValInPos mat i j) 2)) (vertPts mat (cons (car cand) (list (+ (cadr cand) (vPtsForOtherX mat rPos (+ i 1) j m)))) rPos (+ i 1) j m n)]
-        )
-    ]    
-    )
-)
-
-(define (vPtsForOtherO mat rPos notEmpTileRPos notEmpTileCPos m) ;* Los nombres de los parametros son mejorables
-    ; (displayln "entró for")
-    ; (display notEmpTileRPos)
-    ; (displayln notEmpTileCPos)
-    ; (displayln (getValInPos mat notEmpTileRPos notEmpTileCPos))
-    (cond
-    [(or (and (> notEmpTileRPos rPos) (< notEmpTileRPos m)) (and (< notEmpTileRPos rPos) (>= notEmpTileRPos 0)))
-        ; (displayln "entró")
-        ; (displayln (if (= (getValInPos mat notEmpTileRPos notEmpTileCPos) 1) 25 3))
-        (if (= (getValInPos mat notEmpTileRPos notEmpTileCPos) 1) 25 3)
-    ]
-    [else 3]
-    )
-)
-
-(define (vPtsForOtherX mat rPos notEmpTileRPos notEmpTileCPos n)
-    (cond
-    [(or (and (> notEmpTileRPos rPos) (< notEmpTileRPos n)) (and (< notEmpTileRPos rPos) (>= notEmpTileRPos 0)))
-        (if (= (getValInPos mat notEmpTileRPos notEmpTileCPos) 2) 20 -3)
-    ]
-    [else -3]
-    )
-)
-
-
-
-
-#|
-    Funcion puntHoriz: Visita hasta 2 casillas horizontales más allá de
-    la posición del candidato. Dependiendo de que se ubique en esas posiciones,
-    aumenta o disminuye los puntos de la candidata.
+    Función inDiagPts: puntua las casillas vecinas antidiagonales
+    a la casilla vacía.
     Entrada:
         mat: Matriz
-        candSinPts: Par candidato con 0 puntos
-        rPos: Posición de filas del candidato
-        cPos: Posición en columnas del candidato
-        i: Posición en filas de la casilla por visitar
-        j: Posición en columnas de la casilla por visitar
-        m: Número de filas de la matriz
-        n: Número de columnas de la matriz
+        cand: Candidato
+        rPos: Posición en filas de la casilla vacía
+        cPos: Posición en columnas de la casilla vacía
+        i: Posición en filas de la casilla visitada
+        j: Posición en columnas de la casilla visitada
+        m: Número de filas
+        n: Número de columnas
 |#
-(define (horzPts mat cand cPos i j m n)
+(define (inDiagPts mat cand rPos cPos i j m n lastTile)
+    ; (display rPos)
+    ; (displayln cPos)
+    ; (display i)
+    ; (displayln j)
+    (cond
+    [(or (< i 0) (and (= j cPos) (= i rPos))) (inDiagPts mat cand rPos cPos (+ i 1) (- j 1) m n lastTile)]
+    [(or (>= i m) (>= j n) (and (= i (+ rPos 2)) (= j (- cPos 2)))) cand] 
+    [(null? (getValInPos mat i j)) cand]
+    [(= (getValInPos mat i j) 0) (inDiagPts mat (cons (car cand) (list (+ (cadr cand) 1))) rPos cPos (+ i 1) (- j 1) m n lastTile)]
+    [else 
+        (cond
+        [(and (= lastTile 1) (= (getValInPos mat i j) 1)) (cons (car cand) (list (+ (cadr cand) 22)))]
+        [(and (= lastTile 2) (= (getValInPos mat i j) 2)) (cons (car cand) (list (+ (cadr cand) 23)))]
+        [(and (> i rPos) (= (getValInPos mat i j) 1)) (inDiagPts mat (cons (car cand) (list (+ (cadr cand) (inDPtsForOther1 mat rPos cPos (+ i 1) (- j 1) m n)))) rPos cPos (+ i 1) (- j 1) m n 1)]
+        [(and (< i rPos) (= (getValInPos mat i j) 1)) (inDiagPts mat (cons (car cand) (list (+ (cadr cand) (inDPtsForOther1 mat rPos cPos (- i 1) (+ j 1) m n)))) rPos cPos (+ i 1) (- j 1) m n 1)]
+        [(and (< i rPos) (= (getValInPos mat i j) 2)) (inDiagPts mat (cons (car cand) (list (+ (cadr cand) (inDPtsForOther2 mat rPos cPos (- i 1) (+ j 1) m n)))) rPos cPos (+ i 1) (- j 1) m n 2)]
+        [(and (> i rPos) (= (getValInPos mat i j) 2)) (inDiagPts mat (cons (car cand) (list (+ (cadr cand) (inDPtsForOther2 mat rPos cPos (+ i 1) (- j 1) m n)))) rPos cPos (+ i 1) (- j 1) m n 2)]
+        )
+    ]    
+    )
+)
+
+#|
+    Función inDPtsForOther1: Verifica si hay 2 casillas con un 1 alineadas de forma
+    antidiagonal. Agrega 25pts si se cumple.
+    Entrada:
+        mat: Matriz
+        rPos: Posición en filas de la casilla antidiagonal anterior
+        cPos: Posición en columnas de la casilla antidiagonal anterior
+        nextTileRPos: Posición en filas de la casilla visitada
+        nextTileCPos: Posición en columna de la casilla visitada
+        m: Número de filas
+        n: Número de columnas
+|#
+(define (inDPtsForOther1 mat rPos cPos nextTileRPos nextTileCPos m n)
+    ; (displayln "entró for")
+    ; (display nextTileRPos)
+    ; (displayln nextTileCPos)
+    ; (displayln (getValInPos mat nextTileRPos nextTileCPos))
+    (cond
+    [(or (and (> nextTileRPos rPos) (< nextTileRPos m) (< nextTileCPos cPos) (>= nextTileCPos 0)) (and (< nextTileRPos rPos) (>= nextTileRPos 0) (> nextTileCPos cPos) (< nextTileCPos n)))
+        ; (displayln "entró")
+        ; (displayln (if (= (getValInPos mat nextTileRPos nextTileCPos) 1) 25 3))
+        (if (= (getValInPos mat nextTileRPos nextTileCPos) 1) 25 3)
+    ]
+    [else 3]
+    )
+)
+
+#|
+    Función inDPtsForOther2: Verifica si hay 2 casillas con un 2 alineadas de forma
+    antidiagonal. Agrega 20pts si se cumple.
+    Entrada:
+        mat: Matriz
+        rPos: Posición en filas de la casilla antidiagonal anterior
+        cPos: Posición en columnas de la casilla antidiagonal anterior
+        nextTileRPos: Posición en filas de la casilla visitada
+        nextTileCPos: Posición en columna de la casilla visitada
+        m: Número de filas
+        n: Número de columnas
+|#
+(define (inDPtsForOther2 mat rPos cPos nextTileRPos nextTileCPos m n)
+    (cond
+    [(or (and (> nextTileRPos rPos) (< nextTileRPos m) (< nextTileCPos cPos) (>= nextTileCPos 0)) (and (< nextTileRPos rPos) (>= nextTileRPos 0) (> nextTileCPos cPos) (< nextTileCPos n)))
+        (if (= (getValInPos mat nextTileRPos nextTileCPos) 2) 20 -3)
+    ]
+    [else -3]
+    )
+)
+
+#|
+    Función diagPts: puntua las casillas vecinas diagonales
+    a la casilla vacía.
+    Entrada:
+        mat: Matriz
+        cand: Candidato
+        rPos: Posición en filas de la casilla vacía
+        cPos: Posición en columnas de la casilla vacía
+        i: Posición en filas de la casilla visitada
+        j: Posición en columnas de la casilla visitada
+        m: Número de filas
+        n: Número de columnas
+|#
+(define (diagPts mat cand rPos cPos i j m n lastTile)
+    (cond
+    [(or (< i 0) (< j 0) (= j cPos) (= i rPos)) (diagPts mat cand rPos cPos (+ i 1) (+ j 1) m n lastTile)]
+    [(or (>= i m) (>= j n) (= i (+ rPos 2)) (= j (+ cPos 2))) cand] 
+    [(= (getValInPos mat i j) 0) (diagPts mat (cons (car cand) (list (+ (cadr cand) 1))) rPos cPos (+ i 1) (+ j 1) m n lastTile)]
+    [else 
+        (cond
+        [(and (= lastTile 1) (= (getValInPos mat i j) 1)) (cons (car cand) (list (+ (cadr cand) 22)))]
+        [(and (= lastTile 2) (= (getValInPos mat i j) 2)) (cons (car cand) (list (+ (cadr cand) 23)))]
+        [(and (> i rPos) (= (getValInPos mat i j) 1)) (diagPts mat (cons (car cand) (list (+ (cadr cand) (dPtsForOther1 mat rPos cPos (+ i 1) (+ j 1) m n)))) rPos cPos (+ i 1) (+ j 1) m n 1)]
+        [(and (< i rPos) (= (getValInPos mat i j) 1)) (diagPts mat (cons (car cand) (list (+ (cadr cand) (dPtsForOther1 mat rPos cPos (- i 1) (- j 1) m n)))) rPos cPos (+ i 1) (+ j 1) m n 1)]
+        [(and (< i rPos) (= (getValInPos mat i j) 2)) (diagPts mat (cons (car cand) (list (+ (cadr cand) (dPtsForOther2 mat rPos cPos (- i 1) (- j 1) m n)))) rPos cPos (+ i 1) (+ j 1) m n 2)]
+        [(and (> i rPos) (= (getValInPos mat i j) 2)) (diagPts mat (cons (car cand) (list (+ (cadr cand) (dPtsForOther2 mat rPos cPos (+ i 1) (+ j 1) m n)))) rPos cPos (+ i 1) (+ j 1) m n 2)]
+        )
+    ]    
+    )
+)
+
+#|
+    Función dPtsForOther1: Verifica si hay 2 casillas con un 1 alineadas de forma
+    diagonal. Agrega 25pts si se cumple.
+    Entrada:
+        mat: Matriz
+        rPos: Posición en filas de la casilla antidiagonal anterior
+        cPos: Posición en columnas de la casilla antidiagonal anterior
+        nextTileRPos: Posición en filas de la casilla visitada
+        nextTileCPos: Posición en columna de la casilla visitada
+        m: Número de filas
+        n: Número de columnas
+|#
+(define (dPtsForOther1 mat rPos cPos nextTileRPos nextTileCPos m n)
+    ; (displayln rPos)
+    ; (display nextTileRPos)
+    ; (displayln nextTileCPos)
+    ; (displayln (getValInPos mat nextTileRPos nextTileCPos))
+    (cond
+    [(or (and (> nextTileRPos rPos) (< nextTileRPos m) (> nextTileCPos cPos) (< nextTileCPos n)) (and (< nextTileRPos rPos) (>= nextTileRPos 0) (< nextTileCPos cPos) (>= nextTileCPos 0)))
+        ; (displayln "entró")
+        ; (displayln (if (= (getValInPos mat nextTileRPos nextTileCPos) 1) 25 3))
+        (if (= (getValInPos mat nextTileRPos nextTileCPos) 1) 25 3)
+    ]
+    [else 3]
+)
+)
+
+#|
+    Función dPtsForOther2: Verifica si hay 2 casillas con un 2 alineadas de forma
+    diagonal. Agrega 20pts si se cumple.
+    Entrada:
+        mat: Matriz
+        rPos: Posición en filas de la casilla antidiagonal anterior
+        cPos: Posición en columnas de la casilla antidiagonal anterior
+        nextTileRPos: Posición en filas de la casilla visitada
+        nextTileCPos: Posición en columna de la casilla visitada
+        m: Número de filas
+        n: Número de columnas
+|#
+(define (dPtsForOther2 mat rPos cPos nextTileRPos nextTileCPos m n)
+    (cond
+    [(or (and (> nextTileRPos rPos) (< nextTileRPos m) (> nextTileCPos cPos) (< nextTileCPos n)) (and (< nextTileRPos rPos) (>= nextTileRPos 0) (< nextTileCPos cPos) (>= nextTileCPos 0) ))
+        (if (= (getValInPos mat nextTileRPos nextTileCPos) 2) 20 -3)
+    ]
+    [else -3]
+    )
+)
+
+#|
+    Función vertPts: puntua las casillas vecinas verticales
+    a la casilla vacía.
+    Entrada:
+        mat: Matriz
+        cand: Candidato
+        rPos: Posición en filas de la casilla vacía
+        i: Posición en filas de la casilla visitada
+        j: Posición en columnas de la casilla visitada
+        m: Número de filas
+        n: Número de columnas
+|#
+(define (vertPts mat cand rPos i j m n lastTile)
+    (cond
+    [(or (< i 0) (= i rPos)) (vertPts mat cand rPos (+ i 1) j m n lastTile)]
+    [(or (>= i m) (= i (+ rPos 2))) cand] 
+    [(= (getValInPos mat i j) 0) (vertPts mat (cons (car cand) (list (+ (cadr cand) 1))) rPos (+ i 1) j m n lastTile)]
+    [else 
+        (cond
+        [(and (= lastTile 1) (= (getValInPos mat i j) 1)) (cons (car cand) (list (+ (cadr cand) 22)))]
+        [(and (= lastTile 2) (= (getValInPos mat i j) 2)) (cons (car cand) (list (+ (cadr cand) 23)))]
+        [(and (> i rPos) (= (getValInPos mat i j) 1)) (vertPts mat (cons (car cand) (list (+ (cadr cand) (vPtsForOther1 mat rPos (+ i 1) j m)))) rPos (+ i 1) j m n 1)]
+        [(and (< i rPos) (= (getValInPos mat i j) 1)) (vertPts mat (cons (car cand) (list (+ (cadr cand) (vPtsForOther1 mat rPos (- i 1) j m)))) rPos (+ i 1) j m n 1)]
+        [(and (< i rPos) (= (getValInPos mat i j) 2)) (vertPts mat (cons (car cand) (list (+ (cadr cand) (vPtsForOther2 mat rPos (- i 1) j m)))) rPos (+ i 1) j m n 2)]
+        [(and (> i rPos) (= (getValInPos mat i j) 2)) (vertPts mat (cons (car cand) (list (+ (cadr cand) (vPtsForOther2 mat rPos (+ i 1) j m)))) rPos (+ i 1) j m n 2)]
+        )
+    ]    
+    )
+)
+
+#|
+    Función vPtsForOther1: Verifica si hay 2 casillas con un 1 alineadas de forma
+    vertical. Agrega 25pts si se cumple.
+    Entrada:
+        mat: Matriz
+        rPos: Posición en filas de la casilla antidiagonal anterior
+        nextTileRPos: Posición en filas de la casilla visitada
+        nextTileCPos: Posición en columna de la casilla visitada
+        m: Número de filas
+|#
+(define (vPtsForOther1 mat rPos nextTileRPos nextTileCPos m) ;* Los nombres de los parametros son mejorables
+    ; (displayln "entró for")
+    ; (display nextTileRPos)
+    ; (displayln nextTileCPos)
+    ; (displayln (getValInPos mat nextTileRPos nextTileCPos))
+    (cond
+    [(or (and (> nextTileRPos rPos) (< nextTileRPos m)) (and (< nextTileRPos rPos) (>= nextTileRPos 0)))
+        ; (displayln "entró")
+        ; (displayln (if (= (getValInPos mat nextTileRPos nextTileCPos) 1) 25 3))
+        (if (= (getValInPos mat nextTileRPos nextTileCPos) 1) 25 3)
+    ]
+    [else 3]
+    )
+)
+
+#|
+    Función vPtsForOther2: Verifica si hay 2 casillas con un 2 alineadas de forma
+    vertical. Agrega 20pts si se cumple.
+    Entrada:
+        mat: Matriz
+        rPos: Posición en filas de la casilla antidiagonal anterior
+        nextTileRPos: Posición en filas de la casilla visitada
+        nextTileCPos: Posición en columna de la casilla visitada
+        n: Número de columnas
+|#
+(define (vPtsForOther2 mat rPos nextTileRPos nextTileCPos n)
+    (cond
+    [(or (and (> nextTileRPos rPos) (< nextTileRPos n)) (and (< nextTileRPos rPos) (>= nextTileRPos 0)))
+        (if (= (getValInPos mat nextTileRPos nextTileCPos) 2) 20 -3)
+    ]
+    [else -3]
+    )
+)
+
+
+
+
+#|
+    Función vertPts: puntua las casillas vecinas horizontales
+    a la casilla vacía.
+    Entrada:
+        mat: Matriz
+        cand: Candidato
+        cPos: Posición en columnas de la casilla vacía
+        i: Posición en filas de la casilla visitada
+        j: Posición en columnas de la casilla visitada
+        n: Número de columnas
+|#
+(define (horzPts mat cand cPos i j n lastTile)
     ; (display i)
     ; (displayln j)
     ; (displayln (getValInPos mat i j))
     (cond
-    [(or (< j 0) (= j cPos)) (horzPts mat cand cPos i (+ j 1) m n)]
+    [(or (< j 0) (= j cPos)) (horzPts mat cand cPos i (+ j 1) n lastTile)]
     [(or (>= j n) (= j (+ cPos 2))) cand] 
-    [(= (getValInPos mat i j) 0) (horzPts mat (cons (car cand) (list (+ (cadr cand) 1))) cPos i (+ j 1) m n)]
+    [(= (getValInPos mat i j) 0) (horzPts mat (cons (car cand) (list (+ (cadr cand) 1))) cPos i (+ j 1) n lastTile)]
     [else 
         (cond
-        [(and (< j cPos) (= (getValInPos mat i j) 1)) (horzPts mat (cons (car cand) (list (+ (cadr cand) (hPtsForOtherO mat cPos i (- j 1) n)))) cPos i (+ j 1) m n)]
-        [(and (> j cPos) (= (getValInPos mat i j) 1)) (horzPts mat (cons (car cand) (list (+ (cadr cand) (hPtsForOtherO mat cPos i (+ j 1) n)))) cPos i (+ j 1) m n)]
-        [(and (< j cPos) (= (getValInPos mat i j) 2)) (horzPts mat (cons (car cand) (list (+ (cadr cand) (hPtsForOtherX mat cPos i (- j 1) n)))) cPos i (+ j 1) m n)]
-        [(and (> j cPos) (= (getValInPos mat i j) 2)) (horzPts mat (cons (car cand) (list (+ (cadr cand) (hPtsForOtherX mat cPos i (+ j 1) n)))) cPos i (+ j 1) m n)]
+        [(and (= lastTile 1) (= (getValInPos mat i j) 1)) (cons (car cand) (list (+ (cadr cand) 22)))]
+        [(and (= lastTile 2) (= (getValInPos mat i j) 2)) (cons (car cand) (list (+ (cadr cand) 23)))]
+        [(and (< j cPos) (= (getValInPos mat i j) 1)) (horzPts mat (cons (car cand) (list (+ (cadr cand) (hPtsForOther1 mat cPos i (- j 1) n)))) cPos i (+ j 1) n 1)]
+        [(and (> j cPos) (= (getValInPos mat i j) 1)) (horzPts mat (cons (car cand) (list (+ (cadr cand) (hPtsForOther1 mat cPos i (+ j 1) n)))) cPos i (+ j 1) n 1)]
+        [(and (< j cPos) (= (getValInPos mat i j) 2)) (horzPts mat (cons (car cand) (list (+ (cadr cand) (hPtsForOther2 mat cPos i (- j 1) n)))) cPos i (+ j 1) n 2)]
+        [(and (> j cPos) (= (getValInPos mat i j) 2)) (horzPts mat (cons (car cand) (list (+ (cadr cand) (hPtsForOther2 mat cPos i (+ j 1) n)))) cPos i (+ j 1) n 2)]
         )
     ]    
     )
 )
-; (cons (car cand) (list (+ (cadr cand) (hPtsForOtherO mat rPos cPos i j n))))
 
 #|
-
+    Función vPtsForOther1: Verifica si hay 2 casillas con un 1 alineadas de forma
+    horizontal. Agrega 25pts si se cumple.
+    Entrada:
+        mat: Matriz
+        cPos: Posición en columnas de la casilla antidiagonal anterior
+        nextTileRPos: Posición en filas de la casilla visitada
+        nextTileCPos: Posición en columna de la casilla visitada
+        n: Número de columnas
 |#
-(define (hPtsForOtherO mat cPos notEmpTileRPos notEmpTileCPos n) ;* Los nombres de los parametros son mejorables
+(define (hPtsForOther1 mat cPos nextTileRPos nextTileCPos n)
     ; (displayln "entró for")
-    ; (display notEmpTileRPos)
-    ; (displayln notEmpTileCPos)
-    ; (displayln (getValInPos mat notEmpTileRPos notEmpTileCPos))
+    ; (display nextTileRPos)
+    ; (displayln nextTileCPos)
+    ; (displayln (getValInPos mat nextTileRPos nextTileCPos))
     (cond
-    [(or (and (> notEmpTileCPos cPos) (< notEmpTileCPos n)) (and (< notEmpTileCPos cPos) (>= notEmpTileCPos 0)))
+    [(or (and (> nextTileCPos cPos) (< nextTileCPos n)) (and (< nextTileCPos cPos) (>= nextTileCPos 0)))
         ; (displayln "entró")
-        ; (displayln (if (= (getValInPos mat notEmpTileRPos notEmpTileCPos) 1) 25 3))
-        (if (= (getValInPos mat notEmpTileRPos notEmpTileCPos) 1) 25 3)
+        ; (displayln (if (= (getValInPos mat nextTileRPos nextTileCPos) 1) 25 3))
+        (if (= (getValInPos mat nextTileRPos nextTileCPos) 1) 25 3)
     ]
     [else 3]
     )
 )
 
-(define (hPtsForOtherX mat cPos notEmpTileRPos notEmpTileCPos n)
+#|
+    Función vPtsForOther2: Verifica si hay 2 casillas con un 2 alineadas de forma
+    horizontal. Agrega 20pts si se cumple.
+    Entrada:
+        mat: Matriz
+        cPos: Posición en columnas de la casilla antidiagonal anterior
+        nextTileRPos: Posición en filas de la casilla visitada
+        nextTileCPos: Posición en columna de la casilla visitada
+        n: Número de columnas
+|#
+(define (hPtsForOther2 mat cPos nextTileRPos nextTileCPos n)
     (cond
-    [(or (and (> notEmpTileCPos cPos) (< notEmpTileCPos n)) (and (< notEmpTileCPos cPos) (>= notEmpTileCPos 0)))
-        (if (= (getValInPos mat notEmpTileRPos notEmpTileCPos) 2) 20 -3)
+    [(or (and (> nextTileCPos cPos) (< nextTileCPos n)) (and (< nextTileCPos cPos) (>= nextTileCPos 0)))
+        (if (= (getValInPos mat nextTileRPos nextTileCPos) 2) 20 -3)
     ]
     [else -3]
     )
 )
 
-; (provide buildMatrix) ;;; Exporta la funcion para importarla desde otro archivo
-(provide (all-defined-out)) ;Exporta todo
+(provide buildMatrix) ;;; Exporta la funcion para importarla desde otro archivo
+(provide setValToPos)
+(provide printMat)
+(provide seleccion)
+; (provide (all-defined-out)) ;Exporta todo

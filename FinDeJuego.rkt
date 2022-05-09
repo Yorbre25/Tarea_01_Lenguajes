@@ -35,20 +35,20 @@
 (define (checkHorizontal elem Y var)
     (cond
     ((empty? Y) false)
-    (else false)))
-    ;(else (checkHorizontalAux elem Y var 1))))
+    ;(else false)))
+    (else (checkHorizontalAux elem Y var 0))))
 
 (define (checkHorizontalAux elem Y var i)
     (cond
     ((equal? i 3) true)
-    ((equal? elem var) (checkHorizontalAux elem (cdr Y) var (+ i 1)))
+    ((equal? elem var) (checkHorizontalAux (car Y) (cdr Y) var (+ i 1)))
     (else false)))
 
 (define (checkVertical elem Y mat col var)
     (cond
     ((empty? mat) false)
-    (else false)))
-    ;(else (checkVerticalAux elem Y mat col var 1 col))))
+    ;(else false)))
+    (else (checkVerticalAux elem Y mat col var 1 col))))
 
 (define (checkVerticalAux elem Y mat col var i currCol)
     (cond
@@ -93,6 +93,8 @@
 (printMat mat)
 (println "-----agregar a matriz-----")
 (set! mat (setValToPos mat 1 1 2))
+(set! mat (setValToPos mat 1 2 2))
+;(set! mat (setValToPos mat 1 4 2))
 (printMat mat)
 (println "-----ver parte de matriz-----")
 (define estado (caar mat))

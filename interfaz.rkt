@@ -3,7 +3,7 @@
 (require racket/gui/base)
 (require table-panel)  ;;; raco pkg install table-panel
 
-(require "AlgoritmoGoloso.rkt")
+(require "AlgoritmoCodicioso.rkt")
 (require "FinDeJuego.rkt")
 
 (define player_turn #t)

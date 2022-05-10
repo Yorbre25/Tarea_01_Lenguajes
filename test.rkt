@@ -1,5 +1,5 @@
 #lang racket
-(require "AlgoritmoGoloso.rkt")
+(require "AlgoritmoCodicioso.rkt")
 
 (println "-----crear matriz-----")
 (define mat (buildMatrix 4 4))

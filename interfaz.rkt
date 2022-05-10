@@ -10,6 +10,22 @@
 (define cell_matrix (buildMatrix 3 3))
 (define value_matrix (buildMatrix 3 3))
 
+(define (game_result msg)
+    (define game_result (new dialog% [label "Resultado de la partida"]
+                                        [min-width 400]
+                                        [min-height 150]
+                                        [alignment '(center center) ]
+                                        [stretchable-width #f]	 
+                                        [stretchable-height #f]))
+
+    (define message (new message% [parent game_result]
+                                    [label msg]
+                                    [font (make-object font% 24 'default)]))
+
+    (send game_result show #t)
+    (exit #t)
+)
+
 (define (get_dimensions dc)
     (list-ref (call-with-values (thunk (send dc get-size)) list) 0)
 )
@@ -44,20 +60,7 @@
 
             (cond 
                 [(checkGameStatus value_matrix 2)
-                    (define game_result (new dialog% [label "Resultado de la partida"]
-                                                     [min-width 400]
-                                                     [min-height 150]
-                                                     [alignment '(center center) ]
-                                                     [stretchable-width #f]	 
-                                                     [stretchable-height #f]))
-
-                    (define message (new message% [parent game_result]
-                                                  [label "Ganó el jugador"]
-                                                  [font (make-object font% 24 'default)]))
-                
-                    (send game_result show #t)
-                    (exit #t)
-                ]
+                    (game_result "Ganó el jugador")]
                 [else 
                     (sleep 0.5)
                     (enemy_turn)
@@ -76,20 +79,7 @@
 
     (cond 
         [(checkGameStatus value_matrix 1)
-            (define game_result (new dialog% [label "Resultado de la partida"]
-                                             [min-width 400]
-                                             [min-height 150]
-                                             [alignment '(center center) ]
-                                             [stretchable-width #f]	 
-                                             [stretchable-height #f]))
-
-            (define message (new message% [parent game_result]
-                                          [label "Ganó la máquina"]
-                                          [font (make-object font% 24.0 'default)]))
-            
-            (send game_result show #t)
-            (exit #t)
-        ]
+                    (game_result "Ganó la máquina")]
         [else 
             (set! player_turn #t)]
     )

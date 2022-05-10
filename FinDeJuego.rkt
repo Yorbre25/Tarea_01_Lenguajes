@@ -27,21 +27,22 @@
 
 (define (checkBoundaries elem Y mat row col var)
     (cond
-    ((checkHorizontal elem Y var) (println "tuqi"))
-    ((checkVertical elem Y mat col var) (println "tuqi2"))
-    ((checkDiagonal elem Y mat row col var) (println "tuqi3"))
+    ((checkHorizontal elem Y var) true)
+    ((checkVertical elem Y mat col var) true)
+    ((checkDiagonal elem Y mat row col var) true)
     (else false)))
 
 (define (checkHorizontal elem Y var)
     (cond
-    ((empty? Y) false)
+    ((or (empty? Y) (empty? (cdr Y))) false)
     ;(else false)))
-    (else (checkHorizontalAux elem Y var 0))))
+    (else (checkHorizontalAux (cadr Y) Y var 1))))
 
 (define (checkHorizontalAux elem Y var i)
     (cond
     ((equal? i 3) true)
-    ((equal? elem var) (checkHorizontalAux (car Y) (cdr Y) var (+ i 1)))
+    ((empty? Y) false)
+    ((equal? elem var) (checkHorizontalAux (cadr Y) Y var (+ i 1)))
     (else false)))
 
 (define (checkVertical elem Y mat col var)
@@ -63,16 +64,16 @@
 (define (checkDiagonal elem Y mat row col var)
     (cond
     ((empty? mat) false)
-    (else (checkDiagonalLeftAux elem Y mat row col row col var 1) (checkDiagonalRightAux elem Y mat row col row col var 1))))
+    (else (or (checkDiagonalLeftAux (caadr mat) (cdar mat) (cdr mat) (+ row 1) (- col 1) (+ row 1) 0 var 1 -1) (checkDiagonalLeftAux (caadr mat) (cdar mat) (cdr mat) (+ row 1) (- col 1) (+ row 1) 0 var 1 1)))))
 
-(define (checkDiagonalLeftAux elem Y mat row col currRow currCol var i)
+(define (checkDiagonalLeftAux elem Y mat row col currRow currCol var i direc)
     (cond
     ((empty? mat) false)
     ((empty? Y) (checkDiagonalLeftAux (caar mat) (cdar mat) (cdr mat) row col (+ currRow 1) currCol var i))
     ((equal? i 3) true)
-    ((and (equal? elem var) (equal? col currCol) (equal? row currRow) (checkDiagonalLeftAux elem (car mat) (cdr mat) (+ row 1) (- col 1) currRow currCol var (+ i 1))))
+    ((and (equal? elem var) (equal? col currCol) (equal? row currRow) (checkDiagonalLeftAux (caadr mat) (cdar mat) (cdr mat) (+ row 1) (+ col direc) (+ row 1) 0 var (+ i 1) direc)))
     ((equal? col currCol) false)
-    (else (checkDiagonalLeftAux (car Y) (cdr Y) mat row col currRow (+ currCol 1) var i))
+    (else (checkDiagonalLeftAux (car Y) (cdr Y) mat row col currRow (+ currCol 1) var i direc))
 ))
 
 (define (checkDiagonalRightAux elem Y mat row col currRow currCol var i)
@@ -93,8 +94,11 @@
 (println "-----agregar a matriz-----")
 (printMat mat)
 (println "-----agregar a matriz-----")
-(set! mat (setValToPos mat 1 1 2))
-(set! mat (setValToPos mat 2 1 2))
+;(set! mat (setValToPos mat 1 3 2))
+(set! mat (setValToPos mat 1 4 2))
+(set! mat (setValToPos mat 1 5 2))
+(set! mat (setValToPos mat 2 1 1))
+(set! mat (setValToPos mat 2 2 2))
 ;(set! mat (setValToPos mat 3 1 2))
 (printMat mat)
 (println "-----ver parte de matriz-----")

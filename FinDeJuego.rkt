@@ -19,7 +19,7 @@
 (define (accessElemAux elem Y mat row col var)
     (cond
     ((and (empty? Y) (empty? mat)) false)
-    ((empty? Y) (accessElemAux (caar mat) (cdar mat) (cdr mat) (+ row 1) col var))
+    ((empty? Y) (accessElemAux (caar mat) (cdar mat) (cdr mat) (+ row 1) 0 var))
     ((equal? elem var) (checkBoundaries elem Y mat row col var))
     (else (accessElemAux (car Y) (cdr Y) mat row (+ col 1) var))
     ))
@@ -48,15 +48,16 @@
     (cond
     ((empty? mat) false)
     ;(else false)))
-    (else (checkVerticalAux elem Y mat col var 1 col))))
+    (else (checkVerticalAux (caadr mat) (cdar mat) mat col var 1 0))))
 
 (define (checkVerticalAux elem Y mat col var i currCol)
     (cond
     ((empty? mat) false)
+    ((empty? Y) (checkVerticalAux (caadr mat) (cadr mat) (cdr mat) col var i (+ currCol 1)))
     ((equal? i 3) true)
-    ((and (equal? elem var) (equal? col currCol) (checkVerticalAux elem (car mat) (cdr mat) col var (+ i 1) 0)))
+    ((and (equal? elem var) (equal? col currCol)) (checkVerticalAux (caadr mat) (car (cdr mat)) (cdr mat) col var (+ i 1) -1))
     ((equal? col currCol) false)
-    (else (checkVerticalAux elem (cdr Y) mat col var i (+ currCol 1))))
+    (else (checkVerticalAux (car Y) (cdr Y) mat col var i (+ currCol 1))))
 )
 
 (define (checkDiagonal elem Y mat row col var)
@@ -93,8 +94,8 @@
 (printMat mat)
 (println "-----agregar a matriz-----")
 (set! mat (setValToPos mat 1 1 2))
-(set! mat (setValToPos mat 1 2 2))
-;(set! mat (setValToPos mat 1 4 2))
+(set! mat (setValToPos mat 2 1 2))
+;(set! mat (setValToPos mat 3 1 2))
 (printMat mat)
 (println "-----ver parte de matriz-----")
 (define estado (caar mat))

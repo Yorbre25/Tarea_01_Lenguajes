@@ -79,7 +79,7 @@
 
     (cond 
         [(checkGameStatus value_matrix 1)
-                    (game_result "Ganó la máquina")]
+            (game_result "Ganó la máquina")]
         [else 
             (set! player_turn #t)]
     )

@@ -466,9 +466,4 @@
     )
 )
 
-;;; (provide buildMatrix) ;;; Exporta la funcion para importarla desde otro archivo
-;;; (provide setValToPos)
-;;; (provide getValInPos)
-;;; (provide printMat)
-;;; (provide seleccion)
-(provide (all-defined-out)) ;Exporta todo
+(provide (all-defined-out)) 

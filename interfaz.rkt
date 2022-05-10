@@ -53,11 +53,10 @@
 
 (define (select_cell cell)
     (cond 
-        [player_turn 
+        [(and player_turn (eq? 0 (getValInPos value_matrix (send cell get-row) (send cell get-col))))
             (draw_X (send cell get-dc))
             (set! value_matrix (setValToPos value_matrix (send cell get-row) (send cell get-col) 2))
             (set! player_turn #f)
-
             (cond 
                 [(checkGameStatus value_matrix 2)
                     (game_result "Ganó el jugador")]
@@ -66,17 +65,14 @@
                     (enemy_turn)
                 ]
             )
-        ]
-    )
+        ])
 )
 
 (define (enemy_turn)
     (define mejorCandidato (seleccion value_matrix))
 
     (draw_O (send (getValInPos cell_matrix (caar mejorCandidato) (cadar mejorCandidato)) get-dc))
-
     (set! value_matrix (setValToPos value_matrix (caar mejorCandidato) (cadar mejorCandidato) 1))
-
     (cond 
         [(checkGameStatus value_matrix 1)
             (game_result "Ganó la máquina")]

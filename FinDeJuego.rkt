@@ -11,7 +11,7 @@
 
 (define (accessElem mat row col var)
     (cond
-    ((empty? mat))
+    ((empty? mat) false)
     (else (accessElemAux (caar mat) (cdar mat) (cdr mat) row col var))
     )
 )
@@ -89,16 +89,17 @@
 ; prueba !!!!!!!!!!!!!!!!!!!!!!!!!
 
 (println "-----crear matriz-----")
-(define mat (buildMatrix 6 6))
+(define mat (buildMatrix 3 3))
 (printMat mat)
-;(set! mat (setValToPos mat 5 1 2))
+(set! mat (setValToPos mat 1 1 1))
+(set! mat (setValToPos mat 2 1 2))
 (println "-----agregar a matriz-----")
 (printMat mat)
 (println "-----agregar a matriz-----")
 ;(set! mat (setValToPos mat 1 3 2))
-(set! mat (setValToPos mat 5 5 2))
-(set! mat (setValToPos mat 4 5 2))
-(set! mat (setValToPos mat 3 5 2))
+;(set! mat (setValToPos mat 5 5 2))
+;set! mat (setValToPos mat 4 5 2))
+;(set! mat (setValToPos mat 3 5 2))
 ;(set! mat (setValToPos mat 1 5 2))
 ;(set! mat (setValToPos mat 2 4 2))
 ;(set! mat (setValToPos mat 2 3 2))

@@ -444,7 +444,7 @@
     )
 )
 
-#|
+#| 
     Función vPtsForOther1: Verifica si hay 2 casillas con un 1 alineadas de forma
     horizontal. Agrega 25pts si se cumple.
     Entrada:
@@ -488,8 +488,9 @@
     )
 )
 
-(provide buildMatrix) ;;; Exporta la funcion para importarla desde otro archivo
-(provide setValToPos)
-(provide printMat)
-(provide seleccion)
-; (provide (all-defined-out)) ;Exporta todo
+;;; (provide buildMatrix) ;;; Exporta la funcion para importarla desde otro archivo
+;;; (provide setValToPos)
+;;; (provide getValInPos)
+;;; (provide printMat)
+;;; (provide seleccion)
+(provide (all-defined-out)) ;Exporta todo

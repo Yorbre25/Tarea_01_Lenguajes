@@ -4,6 +4,7 @@
 (require table-panel)  ;;; raco pkg install table-panel
 
 (require "AlgoritmoGoloso.rkt")
+(require "FinDeJuego.rkt")
 
 (define player_turn #t)
 (define cell_matrix (buildMatrix 3 3))
@@ -40,8 +41,28 @@
             (draw_X (send cell get-dc))
             (set! value_matrix (setValToPos value_matrix (send cell get-row) (send cell get-col) 2))
             (set! player_turn #f)
-            (sleep 0.5)
-            (enemy_turn)
+
+            (cond 
+                [(checkGameStatus value_matrix 2)
+                    (define game_result (new dialog% [label "Resultado de la partida"]
+                                                     [min-width 400]
+                                                     [min-height 150]
+                                                     [alignment '(center center) ]
+                                                     [stretchable-width #f]	 
+                                                     [stretchable-height #f]))
+
+                    (define message (new message% [parent game_result]
+                                                  [label "Ganó el jugador"]
+                                                  [font (make-object font% 24 'default)]))
+                
+                    (send game_result show #t)
+                    (exit #t)
+                ]
+                [else 
+                    (sleep 0.5)
+                    (enemy_turn)
+                ]
+            )
         ]
     )
 )
@@ -53,7 +74,25 @@
 
     (set! value_matrix (setValToPos value_matrix (caar mejorCandidato) (cadar mejorCandidato) 1))
 
-    (set! player_turn #t)
+    (cond 
+        [(checkGameStatus value_matrix 1)
+            (define game_result (new dialog% [label "Resultado de la partida"]
+                                             [min-width 400]
+                                             [min-height 150]
+                                             [alignment '(center center) ]
+                                             [stretchable-width #f]	 
+                                             [stretchable-height #f]))
+
+            (define message (new message% [parent game_result]
+                                          [label "Ganó la máquina"]
+                                          [font (make-object font% 24.0 'default)]))
+            
+            (send game_result show #t)
+            (exit #t)
+        ]
+        [else 
+            (set! player_turn #t)]
+    )
 )
 
 (define cell% 
@@ -114,10 +153,7 @@
 
     (generate_board grid rows cols)
 
-    ;;; (printMat cell_matrix)
-    ;;; (printMat value_matrix)
-
     (send frame show #t)
 )
 
-(TTT 8 3)
+(TTT 3 3)

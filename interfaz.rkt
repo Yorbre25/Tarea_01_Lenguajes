@@ -34,6 +34,19 @@
     (floor (/ (get_dimensions dc) 5))
 )
 
+(define (check_draw)
+    (define is_draw #t)
+    (for ([i (in-range (length value_matrix))])
+        (for ([j (in-range (length (car value_matrix)))])
+            (cond 
+                [(eq? 0 (getValInPos value_matrix i j)) (set! is_draw #f)]
+            )
+        )
+    )
+    (cond 
+        [is_draw (game_result "Empate 🤪")])
+)
+
 (define (draw_X dc)
     (send dc set-pen (new pen% [color (make-object color% 250 112 112 1)] [width 4]))
 
@@ -59,8 +72,9 @@
             (set! player_turn #f)
             (cond 
                 [(checkGameStatus value_matrix 2)
-                    (game_result "Ganó el jugador")]
+                    (game_result "Ganó el jugador 🔥")]
                 [else 
+                    (check_draw)
                     (sleep 0.5)
                     (enemy_turn)
                 ]
@@ -75,9 +89,11 @@
     (set! value_matrix (setValToPos value_matrix (caar mejorCandidato) (cadar mejorCandidato) 1))
     (cond 
         [(checkGameStatus value_matrix 1)
-            (game_result "Ganó la máquina")]
+            (game_result "Ganó la máquina 😭")]
         [else 
-            (set! player_turn #t)]
+            (check_draw)
+            (set! player_turn #t)
+        ]
     )
 )
 

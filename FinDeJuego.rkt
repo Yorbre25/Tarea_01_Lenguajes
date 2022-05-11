@@ -42,6 +42,7 @@
     (cond
     ((equal? i 3) true)
     ((empty? Y) false)
+    ((and (equal? elem var) (empty? (cdr Y))) (checkHorizontalAux (car Y) Y var (+ i 1))) ;caso especial
     ((equal? elem var) (checkHorizontalAux (cadr Y) (cdr Y) var (+ i 1)))
     (else false)))
 
@@ -54,10 +55,11 @@
 (define (checkVerticalAux elem Y mat col var i currCol)
     (cond
     ((equal? i 3) true)
-    ((empty? mat) false)
-    ((and (equal? elem var) (equal? col currCol)) (checkVerticalAux (cadar mat) (cdar mat) (cdr mat) col var (+ i 1) 0))
+    ((and (empty? mat) (empty? Y)) false)
     ((and (empty? Y) (empty? (cdr mat))) false)
-    ((empty? Y) (checkVerticalAux (caadr mat) (cadr mat) (cdr mat) 0 var i (+ currCol 1)))
+    ((and (equal? elem var) (equal? col currCol) (empty? (cdr mat))) (checkVerticalAux (car Y) Y mat col var (+ i 1) -1)) ; caso especial ultima fila
+    ((and (equal? elem var) (equal? col currCol)) (checkVerticalAux (caadr mat) Y mat col var (+ i 1) -1)) ; caso especial 
+    ((empty? Y) (checkVerticalAux (caadr mat) (cadr mat) (cdr mat) col var i -1))
     ((equal? col currCol) false)
     (else (checkVerticalAux (car Y) (cdr Y) mat col var i (+ currCol 1)))))
 
@@ -91,7 +93,11 @@
 (println "-----crear matriz-----")
 (define mat (buildMatrix 3 3))
 (printMat mat)
-(set! mat (setValToPos mat 1 1 1))
+(set! mat (setValToPos mat 0 0 1))
+(set! mat (setValToPos mat 0 2 1))
+(set! mat (setValToPos mat 2 2 1))
+(set! mat (setValToPos mat 0 1 2))
+(set! mat (setValToPos mat 1 1 2))
 (set! mat (setValToPos mat 2 1 2))
 (println "-----agregar a matriz-----")
 (printMat mat)
@@ -116,9 +122,10 @@
 ;(define estado3 (caar estado2))
 ;(displayln estado3)
 (println "-----game status-----")
-(define estado4 (checkGameStatus mat 2))
+(define estado4 (checkGameStatus mat 1))
+(define estado5 (checkGameStatus mat 2))
 (displayln estado4)
-
+(displayln estado5)
 ; !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 

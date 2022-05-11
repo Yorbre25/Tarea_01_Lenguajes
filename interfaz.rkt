@@ -67,7 +67,7 @@
 (define (select_cell cell)
     (cond 
         [(and player_turn (eq? 0 (getValInPos value_matrix (send cell get-row) (send cell get-col))))
-            (draw_X (send cell get-dc))
+            (draw_O (send cell get-dc))
             (set! value_matrix (setValToPos value_matrix (send cell get-row) (send cell get-col) 2))
             (set! player_turn #f)
             (cond 
@@ -85,7 +85,7 @@
 (define (enemy_turn)
     (define mejorCandidato (seleccion value_matrix))
 
-    (draw_O (send (getValInPos cell_matrix (caar mejorCandidato) (cadar mejorCandidato)) get-dc))
+    (draw_X (send (getValInPos cell_matrix (caar mejorCandidato) (cadar mejorCandidato)) get-dc))
     (set! value_matrix (setValToPos value_matrix (caar mejorCandidato) (cadar mejorCandidato) 1))
     (cond 
         [(checkGameStatus value_matrix 1)

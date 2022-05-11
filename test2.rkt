@@ -1,5 +1,5 @@
 #lang racket
-(require "AlgoritmoGoloso.rkt")
+(require "AlgoritmoCodicioso.rkt")
 
 #|
     Una matriz 3x3, para ganas hay que colocar

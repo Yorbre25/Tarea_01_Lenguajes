@@ -1,5 +1,5 @@
 #lang racket
-(require "AlgoritmoGoloso.rkt")
+(require "AlgoritmoCodicioso.rkt")
 
 #|
     Una matriz 4x4

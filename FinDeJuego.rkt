@@ -1,5 +1,5 @@
 #lang racket 
-(require "AlgoritmoGoloso.rkt")
+(require "AlgoritmoCodicioso.rkt")
 
 
 (define (checkGameStatus mat var)

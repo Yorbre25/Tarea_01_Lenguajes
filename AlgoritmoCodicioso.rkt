@@ -18,7 +18,7 @@
 )
 
 #|
-    Crea una función de 0s.
+    Crea una matriz de 0s.
     m y n deben ser mayor que 2 y menor que 11.
     Entrada:
         m: numero de filas
@@ -119,7 +119,10 @@
         mat: Matriz
 |#
 (define (seleccion mat)
-    (seleccionAux (objetivo mat (viabilidad mat)) '(0 0))
+    (cond
+    [(null? (viabilidad mat)) null]
+    [else (seleccionAux (objetivo mat (viabilidad mat)) '(0 0))]
+    )
 )
 
 (define (seleccionAux candidatosPuntuados mejor)
@@ -186,10 +189,6 @@
         n: Número de columnas
 |#
 (define (inDiagPts mat cand rPos cPos i j m n lastTile)
-    ; (display rPos)
-    ; (displayln cPos)
-    ; (display i)
-    ; (displayln j)
     (cond
     [(or (< i 0) (and (= j cPos) (= i rPos))) (inDiagPts mat cand rPos cPos (+ i 1) (- j 1) m n lastTile)]
     [(or (>= i m) (>= j n) (and (= i (+ rPos 2)) (= j (- cPos 2)))) cand] 
@@ -221,10 +220,6 @@
         n: Número de columnas
 |#
 (define (inDPtsForOther1 mat rPos cPos nextTileRPos nextTileCPos m n)
-    ; (displayln "entró for")
-    ; (display nextTileRPos)
-    ; (displayln nextTileCPos)
-    ; (displayln (getValInPos mat nextTileRPos nextTileCPos))
     (cond
     [(or (and (> nextTileRPos rPos) (< nextTileRPos m) (< nextTileCPos cPos) (>= nextTileCPos 0)) (and (< nextTileRPos rPos) (>= nextTileRPos 0) (> nextTileCPos cPos) (< nextTileCPos n)))
         ; (displayln "entró")
@@ -300,10 +295,6 @@
         n: Número de columnas
 |#
 (define (dPtsForOther1 mat rPos cPos nextTileRPos nextTileCPos m n)
-    ; (displayln rPos)
-    ; (display nextTileRPos)
-    ; (displayln nextTileCPos)
-    ; (displayln (getValInPos mat nextTileRPos nextTileCPos))
     (cond
     [(or (and (> nextTileRPos rPos) (< nextTileRPos m) (> nextTileCPos cPos) (< nextTileCPos n)) (and (< nextTileRPos rPos) (>= nextTileRPos 0) (< nextTileCPos cPos) (>= nextTileCPos 0)))
         ; (displayln "entró")
@@ -375,11 +366,7 @@
         nextTileCPos: Posición en columna de la casilla visitada
         m: Número de filas
 |#
-(define (vPtsForOther1 mat rPos nextTileRPos nextTileCPos m) ;* Los nombres de los parametros son mejorables
-    ; (displayln "entró for")
-    ; (display nextTileRPos)
-    ; (displayln nextTileCPos)
-    ; (displayln (getValInPos mat nextTileRPos nextTileCPos))
+(define (vPtsForOther1 mat rPos nextTileRPos nextTileCPos m)
     (cond
     [(or (and (> nextTileRPos rPos) (< nextTileRPos m)) (and (< nextTileRPos rPos) (>= nextTileRPos 0)))
         ; (displayln "entró")
@@ -410,8 +397,6 @@
 )
 
 
-
-
 #|
     Función vertPts: puntua las casillas vecinas horizontales
     a la casilla vacía.
@@ -424,9 +409,6 @@
         n: Número de columnas
 |#
 (define (horzPts mat cand cPos i j n lastTile)
-    ; (display i)
-    ; (displayln j)
-    ; (displayln (getValInPos mat i j))
     (cond
     [(or (< j 0) (= j cPos)) (horzPts mat cand cPos i (+ j 1) n lastTile)]
     [(or (>= j n) (= j (+ cPos 2))) cand] 
@@ -455,10 +437,6 @@
         n: Número de columnas
 |#
 (define (hPtsForOther1 mat cPos nextTileRPos nextTileCPos n)
-    ; (displayln "entró for")
-    ; (display nextTileRPos)
-    ; (displayln nextTileCPos)
-    ; (displayln (getValInPos mat nextTileRPos nextTileCPos))
     (cond
     [(or (and (> nextTileCPos cPos) (< nextTileCPos n)) (and (< nextTileCPos cPos) (>= nextTileCPos 0)))
         ; (displayln "entró")
@@ -488,9 +466,4 @@
     )
 )
 
-;;; (provide buildMatrix) ;;; Exporta la funcion para importarla desde otro archivo
-;;; (provide setValToPos)
-;;; (provide getValInPos)
-;;; (provide printMat)
-;;; (provide seleccion)
-(provide (all-defined-out)) ;Exporta todo
+(provide (all-defined-out)) 

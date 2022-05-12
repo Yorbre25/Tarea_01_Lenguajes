@@ -83,6 +83,7 @@
     (else (checkDiagonalLeftAux (car Y) (cdr Y) mat row col currRow (+ currCol 1) var i direc)))
 )
 
+
 ; prueba !!!!!!!!!!!!!!!!!!!!!!!!!
 
 (println "-----crear matriz-----")

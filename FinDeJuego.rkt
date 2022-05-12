@@ -1,7 +1,12 @@
 #lang racket 
 (require "AlgoritmoCodicioso.rkt")
 
-
+#|
+    Verifica si se cumple la condicion de gane para una matriz dad y un parametro dado.
+    Entrada:
+        mat: matriz
+        var: parametro a revisar
+|#
 (define (checkGameStatus mat var)
   (cond
     ((empty? mat) mat)
@@ -9,6 +14,14 @@
     )
 )
 
+#|
+    Verifica si una casilla en la matriz cumple con el parametro establecido.
+    Entrada:
+        mat: matriz
+        row: posicion de la casilla en fila
+        col: posicion de la casilla en columna
+        var: parametro a revisar
+|#
 (define (accessElem mat row col var)
     (cond
     ((empty? mat) false)
@@ -16,6 +29,16 @@
     )
 )
 
+#|
+    Funcion auxiliar que verifica si una casilla en la matriz cumple con el parametro establecido.
+    Entrada:
+        elem: casilla que se esta evaluando
+        Y: fila que se esta evaluando
+        mat: matriz
+        row: posicion de la casilla en fila
+        col: posicion de la casilla en columna
+        var: parametro a revisar
+|#
 (define (accessElemAux elem Y mat row col var)
     (cond
     ((and (empty? Y) (empty? mat)) false)
@@ -24,7 +47,16 @@
     (else (accessElemAux (car Y) (cdr Y) mat row (+ col 1) var))
     ))
 
-
+#|
+    Revisa las casillas contiguas a el elemento analizado, si no se cumple la condicion de gane se vuelve a buscar un elemento.
+    Entrada:
+        elem: casilla que se esta evaluando
+        Y: fila que se esta evaluando
+        mat: matriz
+        row: posicion de la casilla en fila
+        col: posicion de la casilla en columna
+        var: parametro a revisar
+|#
 (define (checkBoundaries elem Y mat row col var)
     (cond
     ((checkHorizontal elem Y var) (println "horizontal") true)
@@ -32,12 +64,27 @@
     ((checkDiagonal elem Y mat row col var) (println "diagonal") true)
     (else (accessElem mat row col var))))
 
+#|
+    Verifica si se cumple la condicion de gane horizontal.
+    Entrada:
+        elem: casilla que se esta evaluando
+        Y: fila que se esta evaluando
+        var: parametro a revisar
+|#
 (define (checkHorizontal elem Y var)
     (cond
     ((or (empty? Y) (empty? (cdr Y))) false)
     ;(else false)))
     (else (checkHorizontalAux (car Y) Y var 1))))
 
+#|
+    FUncion auxiliar que verifica si se cumple la condicion de gane horizontal.
+    Entrada:
+        elem: casilla que se esta evaluando
+        Y: fila que se esta evaluando
+        var: parametro a revisar
+        i: contador de casillas contiguas 
+|#
 (define (checkHorizontalAux elem Y var i)
     (cond
     ((equal? i 3) true)
@@ -46,12 +93,31 @@
     ((equal? elem var) (checkHorizontalAux (cadr Y) (cdr Y) var (+ i 1)))
     (else false)))
 
+#|
+    Verifica si se cumple la condicion de gane vertical.
+    Entrada:
+        elem: casilla que se esta evaluando
+        Y: fila que se esta evaluando
+        mat: matriz
+        var: parametro a revisar
+|#
 (define (checkVertical elem Y mat col var)
     (cond
     ((or (empty? mat) (empty? (cdr mat))) false)
     ;(else false)))
     (else (checkVerticalAux (caadr mat) (car mat) (cdr mat) col var 1 -1))))
 
+#|
+    Funcion auxiliar que verifica si se cumple la condicion de gane vertical.
+    Entrada:
+        elem: casilla que se esta evaluando
+        Y: fila que se esta evaluando
+        mat: matriz
+        col: columna a revisar 
+        var: parametro a revisar
+        i: contador de casillas contiguas 
+        currCol: columna actual
+|#
 (define (checkVerticalAux elem Y mat col var i currCol)
     (cond
     ((equal? i 3) true)
@@ -63,13 +129,36 @@
     ((equal? col currCol) false)
     (else (checkVerticalAux (car Y) (cdr Y) mat col var i (+ currCol 1)))))
 
-
+#|
+    Verifica si se cumple la condicion de gane vertical.
+    Entrada:
+        elem: casilla que se esta evaluando
+        Y: fila que se esta evaluando
+        mat: matriz
+        row: fila a revisar
+        col: columna a revisar 
+        var: parametro a revisar
+|#
 (define (checkDiagonal elem Y mat row col var)
     (cond
     ;((or (empty? mat) (cdr mat)) false)
     ((empty? mat) false)
     (else (or (checkDiagonalLeftAux (caar mat) (cdar mat) (cdr mat) (+ row 1) (- col 1) (+ row 1) 0 var 1 -1) (checkDiagonalLeftAux (caar mat) (cdar mat) (cdr mat) (+ row 1) (+ col 1) (+ row 1) 0 var 1 1)))))
 
+#|
+    Funcion auxiliar que verifica si se cumple la condicion de gane diagonal.
+    Entrada:
+        elem: casilla que se esta evaluando
+        Y: fila que se esta evaluando
+        mat: matriz
+        row: fila a revisar
+        col: columna a revisar 
+        currRow: fila actual
+        currCol: columna actual
+        var: parametro a revisar
+        i: contador de casillas contiguas 
+        direc: direccion a revisar
+|#
 (define (checkDiagonalLeftAux elem Y mat row col currRow currCol var i direc)
     (cond
     ((and (empty? mat) (empty? Y)) false)

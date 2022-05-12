@@ -57,7 +57,7 @@
     ((equal? i 3) true)
     ((and (empty? mat) (empty? Y)) false)
     ((and (empty? Y) (empty? (cdr mat))) false)
-    ((and (equal? elem var) (equal? col currCol) (empty? (cdr mat))) (checkVerticalAux (car Y) Y mat col var (+ i 1) -1)) ; caso especial ultima fila
+    ((and (equal? elem var) (equal? col currCol) (empty? (cdr mat))) (checkVerticalAux (car Y) (car mat) mat col var (+ i 1) -1)) ; caso especial ultima fila
     ((and (equal? elem var) (equal? col currCol)) (checkVerticalAux (cadr mat) (car mat) (cdr mat) col var (+ i 1) -1)) ; caso especial 
     ((empty? Y) (checkVerticalAux (caadr mat) (car mat) (cdr mat) col var i 0))
     ((equal? col currCol) false)
@@ -100,7 +100,7 @@
 (set! mat (setValToPos mat 2 1 2))
 (set! mat (setValToPos mat 1 1 2))
 ;(set! mat (setValToPos mat 0 0 2))
-;(set! mat (setValToPos mat 1 0 2))
+;(set! mat (setValToPos mat 3 1 2))
 ;(set! mat (setValToPos mat 1 1 2))
 ;(set! mat (setValToPos mat 2 0 2))
 ;(set! mat (setValToPos mat 2 2 1))

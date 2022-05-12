@@ -78,20 +78,11 @@
     ((equal? i 3) true)
     ((and (equal? elem var) (equal? col currCol) (equal? row currRow) (empty? mat)) (checkDiagonalLeftAux (car Y) (cdr Y) mat (+ row 1) (+ col direc) (+ row 1) 0 var (+ i 1) direc)) ; caso especial ultima fila
     ((and (equal? elem var) (equal? col currCol) (equal? row currRow) (empty? (cdr mat))) (checkDiagonalLeftAux (caar mat) (car mat) (cdr mat) (+ row 1) (+ col direc) (+ row 1) 0 var (+ i 1) direc)) ; caso especial ultima fila
-    ((and (equal? elem var) (equal? col currCol) (equal? row currRow)) (checkDiagonalLeftAux (caadr mat) (cdar mat) (cdr mat) (+ row 1) (+ col direc) (+ row 1) 0 var (+ i 1) direc))
+    ((and (equal? elem var) (equal? col currCol) (equal? row currRow)) (checkDiagonalLeftAux (caar mat) (cdar mat) (cdr mat) (+ row 1) (+ col direc) (+ row 1) 0 var (+ i 1) direc))
     ((equal? col currCol) false)
     (else (checkDiagonalLeftAux (car Y) (cdr Y) mat row col currRow (+ currCol 1) var i direc)))
 )
 
-(define (checkDiagonalRightAux elem Y mat row col currRow currCol var i)
-    (cond
-    ((empty? mat) false)
-    ((empty? Y) (checkDiagonalLeftAux (caar mat) (cdar mat) (cdr mat) row col (+ currRow 1) currCol var i))
-    ((equal? i 3) true)
-    ((and (equal? elem var) (equal? col currCol) (equal? row currRow) (checkDiagonalLeftAux elem (car mat) (cdr mat) (+ row 1) (+ col 1) currRow currCol var (+ i 1))))
-    ((equal? col currCol) false)
-    (else (checkDiagonalLeftAux (car Y) (cdr Y) mat row col currRow (+ currCol 1) var i))
-))
 ; prueba !!!!!!!!!!!!!!!!!!!!!!!!!
 
 (println "-----crear matriz-----")
@@ -99,8 +90,8 @@
 (printMat mat)
 (set! mat (setValToPos mat 2 1 2))
 (set! mat (setValToPos mat 1 1 2))
-;(set! mat (setValToPos mat 0 0 2))
-;(set! mat (setValToPos mat 3 1 2))
+(set! mat (setValToPos mat 0 2 2))
+(set! mat (setValToPos mat 3 0 2))
 ;(set! mat (setValToPos mat 1 1 2))
 ;(set! mat (setValToPos mat 2 0 2))
 ;(set! mat (setValToPos mat 2 2 1))

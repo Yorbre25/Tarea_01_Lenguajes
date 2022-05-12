@@ -140,7 +140,7 @@
         candidatos: Lista de candidatos
 |#
 (define (objetivo mat candidatos)
-    (displayln (objetivoAux mat candidatos '()))
+    ; (displayln (objetivoAux mat candidatos '()))
     (objetivoAux mat candidatos '())
 )
 
@@ -198,8 +198,8 @@
         (cond
         [(and (= lastTile 1) (= (getValInPos mat i j) 1)) (cons (car cand) (list (+ (cadr cand) 22)))]
         [(and (= lastTile 2) (= (getValInPos mat i j) 2)) (cons (car cand) (list (+ (cadr cand) 23)))]
-        [(and (> i rPos) (= (getValInPos mat i j) 1)) (inDiagPts mat (cons (car cand) (list (+ (cadr cand) (inDPtsForOther1 mat rPos cPos (+ i 1) (- j 1) m n)))) rPos cPos (+ i 1) (- j 1) m n 1)]
-        [(and (< i rPos) (= (getValInPos mat i j) 1)) (inDiagPts mat (cons (car cand) (list (+ (cadr cand) (inDPtsForOther1 mat rPos cPos (- i 1) (+ j 1) m n)))) rPos cPos (+ i 1) (- j 1) m n 1)]
+        [(and (> i rPos) (= (getValInPos mat i j) 1)) (inDiagPts mat (cons (car cand) (list (+ (cadr cand) (inDsolucion mat rPos cPos (+ i 1) (- j 1) m n)))) rPos cPos (+ i 1) (- j 1) m n 1)]
+        [(and (< i rPos) (= (getValInPos mat i j) 1)) (inDiagPts mat (cons (car cand) (list (+ (cadr cand) (inDsolucion mat rPos cPos (- i 1) (+ j 1) m n)))) rPos cPos (+ i 1) (- j 1) m n 1)]
         [(and (< i rPos) (= (getValInPos mat i j) 2)) (inDiagPts mat (cons (car cand) (list (+ (cadr cand) (inDPtsForOther2 mat rPos cPos (- i 1) (+ j 1) m n)))) rPos cPos (+ i 1) (- j 1) m n 2)]
         [(and (> i rPos) (= (getValInPos mat i j) 2)) (inDiagPts mat (cons (car cand) (list (+ (cadr cand) (inDPtsForOther2 mat rPos cPos (+ i 1) (- j 1) m n)))) rPos cPos (+ i 1) (- j 1) m n 2)]
         )
@@ -219,7 +219,7 @@
         m: Número de filas
         n: Número de columnas
 |#
-(define (inDPtsForOther1 mat rPos cPos nextTileRPos nextTileCPos m n)
+(define (inDsolucion mat rPos cPos nextTileRPos nextTileCPos m n)
     (cond
     [(or (and (> nextTileRPos rPos) (< nextTileRPos m) (< nextTileCPos cPos) (>= nextTileCPos 0)) (and (< nextTileRPos rPos) (>= nextTileRPos 0) (> nextTileCPos cPos) (< nextTileCPos n)))
         ; (displayln "entró")
@@ -273,8 +273,8 @@
         (cond
         [(and (= lastTile 1) (= (getValInPos mat i j) 1)) (cons (car cand) (list (+ (cadr cand) 22)))]
         [(and (= lastTile 2) (= (getValInPos mat i j) 2)) (cons (car cand) (list (+ (cadr cand) 23)))]
-        [(and (> i rPos) (= (getValInPos mat i j) 1)) (diagPts mat (cons (car cand) (list (+ (cadr cand) (dPtsForOther1 mat rPos cPos (+ i 1) (+ j 1) m n)))) rPos cPos (+ i 1) (+ j 1) m n 1)]
-        [(and (< i rPos) (= (getValInPos mat i j) 1)) (diagPts mat (cons (car cand) (list (+ (cadr cand) (dPtsForOther1 mat rPos cPos (- i 1) (- j 1) m n)))) rPos cPos (+ i 1) (+ j 1) m n 1)]
+        [(and (> i rPos) (= (getValInPos mat i j) 1)) (diagPts mat (cons (car cand) (list (+ (cadr cand) (dSolucion1 mat rPos cPos (+ i 1) (+ j 1) m n)))) rPos cPos (+ i 1) (+ j 1) m n 1)]
+        [(and (< i rPos) (= (getValInPos mat i j) 1)) (diagPts mat (cons (car cand) (list (+ (cadr cand) (dSolucion1 mat rPos cPos (- i 1) (- j 1) m n)))) rPos cPos (+ i 1) (+ j 1) m n 1)]
         [(and (< i rPos) (= (getValInPos mat i j) 2)) (diagPts mat (cons (car cand) (list (+ (cadr cand) (dPtsForOther2 mat rPos cPos (- i 1) (- j 1) m n)))) rPos cPos (+ i 1) (+ j 1) m n 2)]
         [(and (> i rPos) (= (getValInPos mat i j) 2)) (diagPts mat (cons (car cand) (list (+ (cadr cand) (dPtsForOther2 mat rPos cPos (+ i 1) (+ j 1) m n)))) rPos cPos (+ i 1) (+ j 1) m n 2)]
         )
@@ -294,7 +294,7 @@
         m: Número de filas
         n: Número de columnas
 |#
-(define (dPtsForOther1 mat rPos cPos nextTileRPos nextTileCPos m n)
+(define (dSolucion1 mat rPos cPos nextTileRPos nextTileCPos m n)
     (cond
     [(or (and (> nextTileRPos rPos) (< nextTileRPos m) (> nextTileCPos cPos) (< nextTileCPos n)) (and (< nextTileRPos rPos) (>= nextTileRPos 0) (< nextTileCPos cPos) (>= nextTileCPos 0)))
         ; (displayln "entró")
@@ -347,8 +347,8 @@
         (cond
         [(and (= lastTile 1) (= (getValInPos mat i j) 1)) (cons (car cand) (list (+ (cadr cand) 22)))]
         [(and (= lastTile 2) (= (getValInPos mat i j) 2)) (cons (car cand) (list (+ (cadr cand) 23)))]
-        [(and (> i rPos) (= (getValInPos mat i j) 1)) (vertPts mat (cons (car cand) (list (+ (cadr cand) (vPtsForOther1 mat rPos (+ i 1) j m)))) rPos (+ i 1) j m n 1)]
-        [(and (< i rPos) (= (getValInPos mat i j) 1)) (vertPts mat (cons (car cand) (list (+ (cadr cand) (vPtsForOther1 mat rPos (- i 1) j m)))) rPos (+ i 1) j m n 1)]
+        [(and (> i rPos) (= (getValInPos mat i j) 1)) (vertPts mat (cons (car cand) (list (+ (cadr cand) (vSolucion1 mat rPos (+ i 1) j m)))) rPos (+ i 1) j m n 1)]
+        [(and (< i rPos) (= (getValInPos mat i j) 1)) (vertPts mat (cons (car cand) (list (+ (cadr cand) (vSolucion1 mat rPos (- i 1) j m)))) rPos (+ i 1) j m n 1)]
         [(and (< i rPos) (= (getValInPos mat i j) 2)) (vertPts mat (cons (car cand) (list (+ (cadr cand) (vPtsForOther2 mat rPos (- i 1) j m)))) rPos (+ i 1) j m n 2)]
         [(and (> i rPos) (= (getValInPos mat i j) 2)) (vertPts mat (cons (car cand) (list (+ (cadr cand) (vPtsForOther2 mat rPos (+ i 1) j m)))) rPos (+ i 1) j m n 2)]
         )
@@ -366,7 +366,7 @@
         nextTileCPos: Posición en columna de la casilla visitada
         m: Número de filas
 |#
-(define (vPtsForOther1 mat rPos nextTileRPos nextTileCPos m)
+(define (vSolucion1 mat rPos nextTileRPos nextTileCPos m)
     (cond
     [(or (and (> nextTileRPos rPos) (< nextTileRPos m)) (and (< nextTileRPos rPos) (>= nextTileRPos 0)))
         ; (displayln "entró")
@@ -417,8 +417,8 @@
         (cond
         [(and (= lastTile 1) (= (getValInPos mat i j) 1)) (cons (car cand) (list (+ (cadr cand) 22)))]
         [(and (= lastTile 2) (= (getValInPos mat i j) 2)) (cons (car cand) (list (+ (cadr cand) 23)))]
-        [(and (< j cPos) (= (getValInPos mat i j) 1)) (horzPts mat (cons (car cand) (list (+ (cadr cand) (hPtsForOther1 mat cPos i (- j 1) n)))) cPos i (+ j 1) n 1)]
-        [(and (> j cPos) (= (getValInPos mat i j) 1)) (horzPts mat (cons (car cand) (list (+ (cadr cand) (hPtsForOther1 mat cPos i (+ j 1) n)))) cPos i (+ j 1) n 1)]
+        [(and (< j cPos) (= (getValInPos mat i j) 1)) (horzPts mat (cons (car cand) (list (+ (cadr cand) (hSolucion1 mat cPos i (- j 1) n)))) cPos i (+ j 1) n 1)]
+        [(and (> j cPos) (= (getValInPos mat i j) 1)) (horzPts mat (cons (car cand) (list (+ (cadr cand) (hSolucion1 mat cPos i (+ j 1) n)))) cPos i (+ j 1) n 1)]
         [(and (< j cPos) (= (getValInPos mat i j) 2)) (horzPts mat (cons (car cand) (list (+ (cadr cand) (hPtsForOther2 mat cPos i (- j 1) n)))) cPos i (+ j 1) n 2)]
         [(and (> j cPos) (= (getValInPos mat i j) 2)) (horzPts mat (cons (car cand) (list (+ (cadr cand) (hPtsForOther2 mat cPos i (+ j 1) n)))) cPos i (+ j 1) n 2)]
         )
@@ -436,7 +436,7 @@
         nextTileCPos: Posición en columna de la casilla visitada
         n: Número de columnas
 |#
-(define (hPtsForOther1 mat cPos nextTileRPos nextTileCPos n)
+(define (hSolucion1 mat cPos nextTileRPos nextTileCPos n)
     (cond
     [(or (and (> nextTileCPos cPos) (< nextTileCPos n)) (and (< nextTileCPos cPos) (>= nextTileCPos 0)))
         ; (displayln "entró")
